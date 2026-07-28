@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crucible - Direction C - The Loot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070a;
+  --raise:#100e14;
+  --ink:#f4efe6;
+  --dim:#8c8296;
+  --amber:#ffc247;
+  --amber-deep:#ff4800;
+  --line:rgba(244,239,230,.12);
+  --r:14px;                    /* SHAPE LOCK: direction C is all-soft, 14px */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);
+  font-family:"Space Grotesk",system-ui,sans-serif;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased}
+img{image-rendering:pixelated}
+
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(58% 42% at 50% 22%, rgba(255,194,71,.20), transparent 68%),
+             radial-gradient(50% 40% at 50% 100%, rgba(255,72,0,.16), transparent 70%)}
+
+.page{position:relative;z-index:2;min-height:100dvh;max-width:1240px;margin:0 auto;
+  padding:max(14px,env(safe-area-inset-top)) 20px 178px}
+
+.bar{display:flex;align-items:center;justify-content:space-between;height:52px}
+.logo{font-family:"Space Mono",monospace;font-weight:700;font-size:13px;letter-spacing:.16em;color:var(--amber)}
+.day{font-family:"Space Mono",monospace;font-size:11px;color:var(--dim);letter-spacing:.1em}
+
+/* ---------- headline total ---------- */
+.hero{padding:26px 0 6px}
+.label{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--dim)}
+.total{font-weight:700;font-size:clamp(66px,20vw,150px);line-height:.86;letter-spacing:-.045em;
+  margin-top:10px;font-variant-numeric:tabular-nums;
+  background:linear-gradient(178deg,#fff8e6 6%,var(--amber) 58%,var(--amber-deep) 108%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 40px rgba(255,194,71,.34))}
+.cond{font-size:clamp(15px,4.2vw,19px);font-weight:500;color:var(--ink);margin-top:12px;max-width:26ch;line-height:1.4}
+.cond b{color:var(--amber);font-weight:700}
+
+/* ---------- the loot itself ---------- */
+.loot{margin-top:26px;display:grid;gap:10px}
+.coin{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;
+  background:var(--raise);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 16px;
+  animation:settle .7s cubic-bezier(.16,1,.3,1) backwards}
+.coin:nth-child(1){animation-delay:.05s}
+.coin:nth-child(2){animation-delay:.13s}
+.coin:nth-child(3){animation-delay:.21s}
+@keyframes settle{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.disc{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  font-family:"Space Mono",monospace;font-weight:700;font-size:13px;color:#0a0810;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.28), 0 5px 16px rgba(0,0,0,.5)}
+.d-usdc{background:linear-gradient(160deg,#7ee59b,#3aa860)}
+.d-rk{background:linear-gradient(160deg,#7fd8ff,#27b9fc)}
+.d-nft{background:linear-gradient(160deg,#ffd98a,#ff9b2f)}
+.amt{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(16px,4.4vw,20px)}
+.tick{font-size:12px;color:var(--dim);margin-top:3px;letter-spacing:.04em}
+.usd{font-family:"Space Mono",monospace;font-weight:700;font-size:clamp(15px,4vw,18px);color:var(--amber);text-align:right}
+.usd small{display:block;font-family:"Space Grotesk",sans-serif;font-weight:500;
+  font-size:11px;color:var(--dim);letter-spacing:.02em;margin-top:3px}
+
+/* ---------- warden + price row ---------- */
+.rows{margin-top:24px;display:grid;gap:12px}
+.row{display:flex;align-items:center;gap:14px;
+  border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:rgba(255,255,255,.02)}
+.row img{width:clamp(78px,21vw,104px);flex:none;
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.6));animation:hover 3.6s ease-in-out infinite}
+@keyframes hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.row .h{font-weight:700;font-size:15px}
+.row .s{font-size:13px;color:var(--dim);margin-top:3px}
+.row .s b{color:#6ee39a;font-weight:700}
+.price{display:flex;align-items:baseline;gap:12px;font-weight:700;font-size:clamp(17px,4.8vw,22px)}
+.price .a{color:var(--dim)}
+.price .b{color:var(--amber)}
+
+/* ---------- sticky CTA ---------- */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:40;
+  padding:14px 20px max(16px,env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(8,7,10,0),rgba(8,7,10,.94) 26%);
+  backdrop-filter:blur(10px)}
+.dock-in{max-width:1240px;margin:0 auto}
+.go{display:block;width:100%;border:0;cursor:pointer;border-radius:var(--r);
+  background:linear-gradient(180deg,var(--amber),var(--amber-deep));
+  color:#1c0900;font-weight:700;font-size:clamp(17px,4.8vw,21px);padding:19px 20px;
+  letter-spacing:.01em;box-shadow:0 10px 34px rgba(255,120,0,.42);
+  transition:transform .13s cubic-bezier(.16,1,.3,1),box-shadow .13s;
+  animation:pulse 2.8s ease-in-out infinite}
+.go:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(255,120,0,.56)}
+.go:active{transform:scale(.985)}
+@keyframes pulse{0%,100%{box-shadow:0 10px 34px rgba(255,120,0,.36)}50%{box-shadow:0 10px 44px rgba(255,120,0,.62)}}
+.dock .note{text-align:center;font-size:12px;color:var(--dim);margin-top:9px}
+.dock .note a{color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(255,194,71,.34)}
+
+@media (min-width:900px){
+  /* dock rejoins the flow at desktop, so drop the mobile scroll reserve and the
+     100dvh floor that would otherwise push the CTA below the fold */
+  .page{padding-bottom:0;min-height:0}
+  .split{display:grid;grid-template-columns:1.02fr .98fr;gap:52px;align-items:start;padding-top:14px}
+  .hero{padding-top:14px}
+  .loot{margin-top:0}
+  .dock{position:static;background:none;backdrop-filter:none;padding:34px 0 40px}
+  .go{width:auto;padding:21px 78px}
+  .dock .note{text-align:left;margin-top:12px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<div class="page">
+
+  <header class="bar">
+    <div class="logo">CRUCIBLE</div>
+    <div class="day">DAY 27</div>
+  </header>
+
+  <div class="split">
+
+    <section class="hero">
+      <p class="label">In the chest right now</p>
+      <div class="total">$12.40</div>
+      <p class="cond">Any hit can crack it. <b>Land it and you take the biggest cut.</b></p>
+
+      <div class="rows">
+        <div class="row">
+          <img src="art/ronke.png" alt="">
+          <div>
+            <div class="h">Today the Warden is a Ronke</div>
+            <div class="s">Ronkeverse holders <b>hit 5% harder</b></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="price"><span class="a">3&cent; a swing</span><span class="b">$12.40 to win</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="label" style="margin-bottom:12px">What is inside</p>
+      <div class="loot">
+        <div class="coin">
+          <div class="disc d-usdc">$</div>
+          <div><div class="amt">11.36</div><div class="tick">USDC</div></div>
+          <div class="usd">$11.36<small>paid to your wallet</small></div>
+        </div>
+        <div class="coin">
+          <div class="disc d-rk">R</div>
+          <div><div class="amt">420</div><div class="tick">RONKESTR</div></div>
+          <div class="usd">$1.04<small>sent as tokens</small></div>
+        </div>
+        <div class="coin">
+          <div class="disc d-nft">N</div>
+          <div><div class="amt">Ronke #2184</div><div class="tick">Ronkeverse NFT</div></div>
+          <div class="usd">bonus<small>goes with the chest</small></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<div class="dock">
+  <div class="dock-in">
+    <button class="go">Swing at the Warden</button>
+    <p class="note">Free to look around. <a href="#">How it works</a></p>
+  </div>
+</div>
+
+</body>
+</html>
