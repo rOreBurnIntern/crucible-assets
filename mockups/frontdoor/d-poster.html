@@ -18,6 +18,12 @@
   --paper:#100d0b; --ink:#f4ede1; --ink2:#9a8d7d; --accent:#ff5a12;
   --rule:#f4ede1; --disc-ink:#100d0b; --shadow:rgba(0,0,0,.55);
 }
+/* The community word carries that community's colour, WARDEN stays ink, so the
+   front door recolours itself to whoever holds the Warden that day. Each community
+   needs TWO values because a bright brand colour that works on ink fails contrast
+   on bone. Ronke blue is the real Ronkeverse value; the Axie class colour below is
+   a PLACEHOLDER pending the canonical palette. */
+:root{--comm:#0F6FA8}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--paper);color:var(--ink);
   font-family:Archivo,system-ui,"Segoe UI",sans-serif;overflow-x:hidden;
@@ -54,7 +60,7 @@ img{image-rendering:pixelated}
 .name{font-family:Anton,Impact,sans-serif;text-transform:uppercase;
   font-size:clamp(46px,14vw,150px);line-height:.84;letter-spacing:-.012em;margin-top:7px}
 .name span{display:block}
-.name .r1{transform:rotate(-2.6deg);transform-origin:left center}
+.name .r1{transform:rotate(-2.6deg);transform-origin:left center;color:var(--comm)}
 .name .r2{transform:rotate(.9deg);transform-origin:left center}
 
 .perk{display:inline-block;background:var(--ink);color:var(--paper);
@@ -169,10 +175,32 @@ img{image-rendering:pixelated}
 <script>
   // review affordance only, not shipping copy
   const root = document.documentElement, tog = document.getElementById('tog');
+
+  // Per-community palette. Adding a community is one row here: the name word, its art,
+  // its perk line, and its colour on each stock. This is what makes the page rebrand
+  // itself daily. Axie/Kevinity values are PLACEHOLDERS pending real brand colours.
+  const COMMUNITIES = {
+    ronke: { word:'Ronke', art:'art/ronke.png', bone:'#0F6FA8', ink:'#27B9FC',
+             perk:'Ronkeverse holders hit 5% harder' },
+    beast: { word:'Beast', art:'art/beast.png', bone:'#8A4E0B', ink:'#F0A33C',
+             perk:'Beast Axie holders hit 5% harder' },
+  };
+  const key = new URLSearchParams(location.search).get('w');
+  const comm = COMMUNITIES[key] || COMMUNITIES.ronke;
+
+  document.querySelector('.name .r1').textContent = comm.word;
+  document.querySelector('.portrait').src = comm.art;
+  document.querySelector('.portrait').alt = 'The ' + comm.word + ' Warden';
+  document.querySelector('.perk').textContent = comm.perk;
+
+  const paint = () => root.style.setProperty('--comm', comm[root.dataset.theme]);
+  paint();
+
   tog.addEventListener('click', () => {
     const next = root.dataset.theme === 'bone' ? 'ink' : 'bone';
     root.dataset.theme = next;
     tog.textContent = next === 'bone' ? 'Paper' : 'Ink';
+    paint();
   });
 </script>
 </body>
