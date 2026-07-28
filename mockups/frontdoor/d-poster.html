@@ -112,6 +112,36 @@ img{image-rendering:pixelated}
 .smallprint{margin-top:12px;font-size:12px;font-weight:700;color:var(--ink2);text-align:center}
 .smallprint a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
 
+/* ---- the rotation: BELOW the fold, so the first screen stays stripped ----
+   Both the Axie and the Ronke persona independently asked for this. Without it the
+   page reads as one community's game: outsiders feel excluded, insiders feel farmed
+   for a day. */
+.rota{border-top:3px solid var(--rule);margin-top:30px;padding-top:16px}
+.rota h2{font-family:Anton,Impact,sans-serif;text-transform:uppercase;
+  font-size:clamp(30px,8.5vw,58px);line-height:.88;letter-spacing:-.01em}
+.rota .lede{font-size:clamp(13px,3.6vw,16px);font-weight:700;color:var(--ink2);
+  margin-top:9px;max-width:42ch;line-height:1.4}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+.tile{border:1px solid var(--ink2);padding:9px 9px 11px;text-align:center;position:relative}
+.tile img{display:block;width:100%;max-width:96px;margin:0 auto}
+.tile .n{font-family:Anton,Impact,sans-serif;text-transform:uppercase;
+  font-size:clamp(13px,3.7vw,17px);margin-top:7px;letter-spacing:.01em}
+.tile .b{font-size:10px;font-weight:700;color:var(--ink2);margin-top:4px;line-height:1.3}
+.tile.today{border:3px solid var(--accent);background:rgba(255,90,18,.08)}
+/* 11 tiles in a 3-col grid would leave an empty cell; Ronke takes the slack,
+   and double width happens to match its 29% share of the rotation. */
+.tile.wide{grid-column:span 2;display:flex;align-items:center;gap:14px;text-align:left}
+.tile.wide img{max-width:104px;margin:0}
+.tile.wide .n{margin-top:0}
+.tile.today .n{color:var(--accent-text)}
+.tile.today .b{color:var(--ink)}
+.tile .flag{position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#1c0900;font-weight:900;font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;padding:3px 7px;white-space:nowrap}
+.tile .odds{position:absolute;top:5px;right:6px;font-size:9px;font-weight:900;color:var(--ink2)}
+.rota .foot2{font-size:12px;font-weight:700;color:var(--ink2);margin-top:14px;
+  padding-bottom:8px;line-height:1.45}
+
 @media (min-width:900px){
   .bout{grid-template-columns:1.02fr .98fr;column-gap:44px;align-items:center;padding-top:18px}
   .billleft{grid-column:1}
@@ -143,7 +173,7 @@ img{image-rendering:pixelated}
     <div class="billleft">
       <p class="tonight">Tonight you fight</p>
       <h1 class="name"><span class="r1">Ronke</span><span class="r2">Warden</span></h1>
-      <p class="perk">Ronkeverse holders hit 5% harder</p>
+      <p class="perk">Ronkeverse holders hit 15% harder</p>
     </div>
 
     <img class="portrait" src="art/ronke.png" alt="The Ronke Warden">
@@ -166,6 +196,13 @@ img{image-rendering:pixelated}
     <p class="smallprint">Costs pennies. Free to look. <a href="index.html">All directions</a></p>
   </footer>
 
+  <section class="rota">
+    <h2>Your day<br>is coming</h2>
+    <p class="lede">A different Warden every day. Hold the right NFT on its day and you hit 15% harder.</p>
+    <div class="grid" id="grid"></div>
+    <p class="foot2">Percentages are how often each Warden shows up. Everyone can play and win every day, the bonus is a bonus.</p>
+  </section>
+
 </div>
 
 <script>
@@ -175,9 +212,9 @@ img{image-rendering:pixelated}
   // perk line, and its colour on each stock. Axie values are PLACEHOLDERS.
   const COMMUNITIES = {
     ronke: { word:'Ronke', art:'art/ronke.png', bone:'#0F6FA8', ink:'#27B9FC',
-             perk:'Ronkeverse holders hit 5% harder' },
+             perk:'Ronkeverse holders hit 15% harder' },
     beast: { word:'Beast', art:'art/beast.png', bone:'#8A4E0B', ink:'#F0A33C',
-             perk:'Beast Axie holders hit 5% harder' },
+             perk:'Aquatic, Bird and Dawn hit 15% harder' },
   };
   const comm = COMMUNITIES[new URLSearchParams(location.search).get('w')] || COMMUNITIES.ronke;
 
@@ -188,6 +225,34 @@ img{image-rendering:pixelated}
 
   const paint = () => root.style.setProperty('--comm', comm[root.dataset.theme]);
   paint();
+
+  /* ---- rotation roster ----
+     Mirrors game/server/src/warden.js. The Axie triangle buffs the group that BEATS
+     the day's Warden, NOT holders of the Warden's own class: G1 beast/bug/mech is
+     countered by G3 aquatic/bird/dawn, G2 reptile/plant/dusk by G1, G3 by G2.
+     Ember is a neutral day (buffedClasses returns []); Ronke has its own flat perk.
+     Weights are WARDEN_POOL_RONKE: ronke 20, everything else 5, total 70. */
+  const G1 = ['beast','bug','mech'], G2 = ['reptile','plant','dusk'], G3 = ['aquatic','bird','dawn'];
+  const cap = (s) => s[0].toUpperCase() + s.slice(1);
+  const counters = (w) => G1.includes(w) ? G3 : G2.includes(w) ? G1 : G3.includes(w) ? G2 : [];
+  const ROSTER = [...G1, ...G2, ...G3, 'ember', 'ronke'];
+  const WEIGHT = (w) => (w === 'ronke' ? 20 : 5), TOTAL = 70;
+  const TODAY = 'ronke';
+
+  const buffText = (w) => {
+    if (w === 'ronke') return 'Ronkeverse holders +15%';
+    if (w === 'ember') return 'Open day, no bonus';
+    return counters(w).map(cap).join(' · ') + ' +15%';
+  };
+
+  document.getElementById('grid').innerHTML = ROSTER.map((w) => `
+    <div class="tile${w === TODAY ? ' today' : ''}${w === 'ronke' ? ' wide' : ''}">
+      ${w === TODAY ? '<span class="flag">Today</span>' : ''}
+      <span class="odds">${Math.round(WEIGHT(w) / TOTAL * 100)}%</span>
+      <img src="art/${w}.png" alt="${cap(w)} Warden">
+      <div><div class="n">${cap(w)}</div>
+      <div class="b">${buffText(w)}</div></div>
+    </div>`).join('');
 
   tog.addEventListener('click', () => {
     const next = root.dataset.theme === 'bone' ? 'ink' : 'bone';
