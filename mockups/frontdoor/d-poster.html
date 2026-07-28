@@ -1,29 +1,33 @@
 <!doctype html>
-<html lang="en" data-theme="bone">
+<html lang="en" data-theme="ink">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Crucible - Direction D - Poster synthesis</title>
+<title>Crucible - Direction D - Poster (stripped)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
-/* Direction D = B's poster language and tilt + C's itemised chest + a much larger Warden.
+/* Direction D, stripped per operator 2026-07-28: pot + one line + button.
+   The itemised chest is now a COLLAPSED expander, not a landing element - two personas
+   reported the open list read as terms-and-conditions and was skipped or bounced off.
+   Cost demoted from headline to a footnote under the CTA (it is an objection-killer,
+   not a reason to start), but kept: hiding price from this audience reads as bait.
    The theme toggle is a REVIEW AFFORDANCE ONLY and would not ship. */
 :root[data-theme="bone"]{
-  --paper:#efe9dc; --ink:#141110; --ink2:#5a5048; --accent:#ff4800; --accent-text:#C0360A;
+  --paper:#efe9dc; --ink:#141110; --ink2:#5a5048; --accent:#ff4800;
+  --accent-text:#C0360A;               /* #ff4800 on bone is 2.82:1 - fails even large-text */
   --rule:#141110; --disc-ink:#efe9dc; --shadow:rgba(20,17,16,.14);
 }
 :root[data-theme="ink"]{
-  --paper:#100d0b; --ink:#f4ede1; --ink2:#9a8d7d; --accent:#ff5a12; --accent-text:#ff5a12;
+  --paper:#100d0b; --ink:#f4ede1; --ink2:#9a8d7d; --accent:#ff5a12;
+  --accent-text:#ff5a12;               /* 6.21:1 on ink - passes */
   --rule:#f4ede1; --disc-ink:#100d0b; --shadow:rgba(0,0,0,.55);
 }
-/* The community word carries that community's colour, WARDEN stays ink, so the
-   front door recolours itself to whoever holds the Warden that day. Each community
-   needs TWO values because a bright brand colour that works on ink fails contrast
-   on bone. Ronke blue is the real Ronkeverse value; the Axie class colour below is
-   a PLACEHOLDER pending the canonical palette. */
-:root{--comm:#0F6FA8}
+/* The community word carries that community's colour, WARDEN stays ink, so the front
+   door rebrands itself daily. Two values per community: a bright brand colour that
+   works on ink fails contrast on bone. Axie value is a PLACEHOLDER. */
+:root{--comm:#27B9FC}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--paper);color:var(--ink);
   font-family:Archivo,system-ui,"Segoe UI",sans-serif;overflow-x:hidden;
@@ -37,9 +41,8 @@ img{image-rendering:pixelated}
 
 .bill{position:relative;z-index:2;min-height:100dvh;max-width:1240px;margin:0 auto;
   padding:max(12px,env(safe-area-inset-top)) 20px max(18px,env(safe-area-inset-bottom));
-  display:grid;grid-template-rows:auto 1fr auto;gap:0}
+  display:grid;grid-template-rows:auto 1fr auto}
 
-/* ---- head ---- */
 .head{display:flex;justify-content:space-between;align-items:baseline;
   padding-bottom:9px;border-bottom:3px solid var(--rule)}
 .house{font-family:Anton,Impact,sans-serif;font-size:clamp(14px,3.8vw,19px);
@@ -51,40 +54,44 @@ img{image-rendering:pixelated}
   text-transform:uppercase;padding:4px 7px;border-radius:2px}
 .tog:hover{color:var(--ink);border-color:var(--ink)}
 
-/* ---- the bout ---- */
-.bout{display:grid;align-content:start;padding-top:12px}
+.bout{display:grid;align-content:start;padding-top:14px}
 
 .tonight{font-size:clamp(10px,2.9vw,12px);font-weight:900;letter-spacing:.3em;
   text-transform:uppercase;color:var(--accent-text)}
 
 .name{font-family:Anton,Impact,sans-serif;text-transform:uppercase;
-  font-size:clamp(46px,14vw,150px);line-height:.84;letter-spacing:-.012em;margin-top:7px}
+  font-size:clamp(50px,15vw,150px);line-height:.84;letter-spacing:-.012em;margin-top:8px}
 .name span{display:block}
 .name .r1{transform:rotate(-2.6deg);transform-origin:left center;color:var(--comm)}
 .name .r2{transform:rotate(.9deg);transform-origin:left center}
 
 .perk{display:inline-block;background:var(--ink);color:var(--paper);
   font-weight:900;font-size:clamp(11px,3.1vw,14px);padding:7px 12px;
-  letter-spacing:.01em;transform:rotate(-1.2deg);margin-top:11px}
+  letter-spacing:.01em;transform:rotate(-1.2deg);margin-top:12px}
 
-/* WARDEN: the dominant element */
-.portrait{display:block;width:clamp(196px,50vw,430px);margin:2px auto 0;
+/* the Warden dominates */
+.portrait{display:block;width:clamp(240px,68vw,440px);margin:8px auto 0;
   filter:drop-shadow(0 18px 0 var(--shadow));animation:sway 4.2s ease-in-out infinite}
 @keyframes sway{0%,100%{transform:rotate(-1.6deg) translateY(0)}50%{transform:rotate(1.6deg) translateY(-7px)}}
 
-/* ---- purse ---- */
-.purse{border-top:3px solid var(--rule);margin-top:8px;padding-top:9px;
-  display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
-.plab{font-size:clamp(10px,2.9vw,12px);font-weight:900;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--ink2)}
-.pfig{font-family:Anton,Impact,sans-serif;font-size:clamp(46px,13vw,116px);
-  line-height:.82;letter-spacing:-.02em;color:var(--accent-text);font-variant-numeric:tabular-nums}
-.pcond{font-size:clamp(12px,3.3vw,15px);font-weight:700;width:100%;margin-top:4px;line-height:1.4}
+/* the pot, and the one line that says you get paid without winning */
+.purse{border-top:3px solid var(--rule);margin-top:12px;padding-top:11px}
+.pfig{font-family:Anton,Impact,sans-serif;font-size:clamp(50px,14.5vw,120px);
+  line-height:.84;letter-spacing:-.02em;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.pfig small{font-family:Archivo,sans-serif;font-weight:900;font-size:clamp(14px,3.9vw,22px);
+  letter-spacing:0;color:var(--ink);margin-left:8px}
+.pcond{font-size:clamp(14px,3.9vw,18px);font-weight:700;margin-top:8px;line-height:1.35;max-width:30ch}
 
-/* ---- what is in it: print list with dotted leaders ---- */
-.loot{margin-top:11px;border-top:1px solid var(--ink2);padding-top:9px}
-.llab{font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:var(--ink2)}
-.lrow{display:grid;grid-template-columns:auto auto 1fr auto;align-items:baseline;gap:9px;margin-top:8px}
+/* itemised chest: available on tap, closed on arrival */
+.what{margin-top:11px}
+.what summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);
+  border-bottom:1px dotted var(--ink2);padding-bottom:2px}
+.what summary::-webkit-details-marker{display:none}
+.what summary::after{content:"+";font-size:14px;line-height:1}
+.what[open] summary::after{content:"\2212"}
+.what summary:hover{color:var(--ink)}
+.lrow{display:grid;grid-template-columns:auto auto 1fr auto;align-items:baseline;gap:9px;margin-top:9px}
 .disc{width:20px;height:20px;border-radius:50%;align-self:center;
   display:grid;place-items:center;font-size:10px;font-weight:900;color:var(--disc-ink)}
 .d1{background:#3aa860}.d2{background:#27b9fc}.d3{background:#ff9b2f}
@@ -93,19 +100,16 @@ img{image-rendering:pixelated}
 .lval{font-weight:900;font-size:clamp(13px,3.6vw,16px);white-space:nowrap}
 .lval.soft{color:var(--ink2);font-weight:700;font-size:clamp(11px,3.1vw,13px)}
 
-/* ---- foot ---- */
-.foot{padding-top:12px}
-.priceline{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:9px}
-.pl1{font-family:Anton,Impact,sans-serif;font-size:clamp(20px,5.6vw,38px);line-height:1}
-.pl2{font-size:clamp(11px,3.1vw,13px);font-weight:700;color:var(--ink2)}
-.enter{display:block;width:100%;border:0;cursor:pointer;background:var(--accent);color:#1c0900;
+.foot{padding-top:14px}
+.enter{display:block;width:100%;border:0;cursor:pointer;background:var(--accent);
+  color:#1c0900;                       /* near-black on orange = ~6.7:1; white was 3.1:1 */
   font-family:Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.05em;
-  font-size:clamp(22px,6.2vw,36px);padding:16px;line-height:1;
+  font-size:clamp(24px,6.8vw,38px);padding:18px;line-height:1;
   box-shadow:7px 7px 0 var(--rule);
   transition:transform .1s cubic-bezier(.16,1,.3,1),box-shadow .1s}
 .enter:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 var(--rule)}
 .enter:active{transform:translate(5px,5px);box-shadow:2px 2px 0 var(--rule)}
-.smallprint{margin-top:11px;font-size:11px;font-weight:700;color:var(--ink2);text-align:center}
+.smallprint{margin-top:12px;font-size:12px;font-weight:700;color:var(--ink2);text-align:center}
 .smallprint a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
 
 @media (min-width:900px){
@@ -114,11 +118,10 @@ img{image-rendering:pixelated}
   .portrait{grid-column:2;grid-row:1 / span 3;width:clamp(300px,36vw,470px);margin:0}
   .name{font-size:clamp(52px,8.6vw,118px)}
   .purse{grid-column:1;margin-top:20px}
-  .loot{grid-column:1}
-  .foot{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:26px;padding-top:20px}
-  .priceline{margin-bottom:0;flex-direction:column;gap:2px}
+  .what{grid-column:1}
+  .foot{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:26px;padding-top:22px}
   .enter{width:auto;padding:20px 64px;justify-self:start}
-  .smallprint{text-align:left}
+  .smallprint{text-align:left;margin-top:0}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -132,7 +135,7 @@ img{image-rendering:pixelated}
     <div class="house">Crucible</div>
     <div class="headr">
       <span class="date">Day 27</span>
-      <button class="tog" id="tog">Paper</button>
+      <button class="tog" id="tog">Ink</button>
     </div>
   </header>
 
@@ -146,51 +149,41 @@ img{image-rendering:pixelated}
     <img class="portrait" src="art/ronke.png" alt="The Ronke Warden">
 
     <section class="purse">
-      <span class="plab">Purse</span>
-      <span class="pfig">$12.40</span>
-      <p class="pcond">Any hit can crack it open. Cracker takes the NFT + $3.72, the other $8.68 splits by damage.</p>
+      <div class="pfig">$12.40<small>in the chest</small></div>
+      <p class="pcond">Crack it, or just do damage. Everyone gets paid.</p>
     </section>
 
-    <section class="loot">
-      <p class="llab">What is in it</p>
+    <details class="what">
+      <summary>What is in it</summary>
       <div class="lrow"><span class="disc d1">$</span><span class="lname">11.36 USDC</span><span class="lead"></span><span class="lval">$11.36</span></div>
       <div class="lrow"><span class="disc d2">R</span><span class="lname">420 RONKESTR</span><span class="lead"></span><span class="lval">$1.04</span></div>
       <div class="lrow"><span class="disc d3">N</span><span class="lname">Ronke #2184</span><span class="lead"></span><span class="lval soft">to whoever cracks it</span></div>
-    </section>
+    </details>
   </main>
 
   <footer class="foot">
-    <div class="priceline">
-      <span class="pl1">Under 1&cent; a swing</span>
-      <span class="pl2">3&cent; forges a weapon, good for 5 swings or more</span>
-    </div>
-    <div>
-      <button class="enter">Step in</button>
-      <p class="smallprint">Free to look. <a href="index.html">Back to all directions</a></p>
-    </div>
+    <button class="enter">Step in</button>
+    <p class="smallprint">Costs pennies. Free to look. <a href="index.html">All directions</a></p>
   </footer>
 
 </div>
 
 <script>
-  // review affordance only, not shipping copy
   const root = document.documentElement, tog = document.getElementById('tog');
 
-  // Per-community palette. Adding a community is one row here: the name word, its art,
-  // its perk line, and its colour on each stock. This is what makes the page rebrand
-  // itself daily. Axie/Kevinity values are PLACEHOLDERS pending real brand colours.
+  // Per-community palette. Adding a community is one row: the name word, its art, its
+  // perk line, and its colour on each stock. Axie values are PLACEHOLDERS.
   const COMMUNITIES = {
     ronke: { word:'Ronke', art:'art/ronke.png', bone:'#0F6FA8', ink:'#27B9FC',
              perk:'Ronkeverse holders hit 5% harder' },
     beast: { word:'Beast', art:'art/beast.png', bone:'#8A4E0B', ink:'#F0A33C',
              perk:'Beast Axie holders hit 5% harder' },
   };
-  const key = new URLSearchParams(location.search).get('w');
-  const comm = COMMUNITIES[key] || COMMUNITIES.ronke;
+  const comm = COMMUNITIES[new URLSearchParams(location.search).get('w')] || COMMUNITIES.ronke;
 
   document.querySelector('.name .r1').textContent = comm.word;
-  document.querySelector('.portrait').src = comm.art;
-  document.querySelector('.portrait').alt = 'The ' + comm.word + ' Warden';
+  const art = document.querySelector('.portrait');
+  art.src = comm.art; art.alt = 'The ' + comm.word + ' Warden';
   document.querySelector('.perk').textContent = comm.perk;
 
   const paint = () => root.style.setProperty('--comm', comm[root.dataset.theme]);
