@@ -162,10 +162,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* ---------- right: the Warden, at B's scale, without B's takeover ---------- */
 .right{position:relative;z-index:2;padding-top:30px;min-height:520px}
-/* the boss sits BELOW the roster, not behind it: B's win was a Warden with a
-   visible face, and a roster laid over its head throws that away twice over */
-/* with the roster gone the boss gets the column to itself, which is the whole
-   reason it was worth importing from B */
+/* the boss owns this column outright. B's contribution was a Warden with a
+   visible face, and anything laid over its head throws that away. */
 .warden{
   position:absolute;z-index:0;left:auto;right:-30px;top:158px;bottom:auto;
   width:568px;height:568px;overflow:hidden;pointer-events:none;
@@ -423,9 +421,9 @@ body[data-state="weapon"] .only-forge{display:none}
   .stage{display:flex;flex-direction:column;column-gap:0}
 
   /* the Warden leads on mobile because it is the only object that says "game"
-     in the first second. But the roster and the rotation line drop BELOW the
-     money: laid over the sprite they were unreadable, which is the exact way
-     direction B failed its colour-blind review. */
+     in the first second. But the rotation line drops BELOW the money: laid over
+     the sprite it was unreadable, which is the exact way direction B failed its
+     colour-blind review. */
   .right{display:contents}
   .wardenhead{order:-2;text-align:left;padding-top:14px;position:relative;z-index:3}
   .col{order:-1}
