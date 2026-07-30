@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crucible arena - Foundry Line</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CRUCIBLE ARENA - DIRECTION C: THE FOUNDRY LINE
+   The loop is the hero. The screen IS the production line:
+   Forge, Strike, Bank, and the chest as the terminus.
+   A molten channel is the factory floor. It is SOLID behind
+   you and a HOLLOW TROUGH ahead of you, so where you stand
+   on the line is literal, not labelled.
+   Signature: banking pours the molten run down the channel
+   into the chest and raises your share.
+   ============================================================ */
+
+:root{
+  --ink:    #100d0b;
+  --bone:   #f4ede1;
+  --muted:  #9a8d7d;
+  --ember:  #ff5a12;
+  --warden: #27B9FC;
+
+  --hair:   rgba(244,237,225,.16);
+  --hair-2: rgba(244,237,225,.30);
+  --disp: 'Big Shoulders Display','Oswald','Arial Narrow',sans-serif;
+  --body: 'Sora','Helvetica Neue',Arial,sans-serif;
+  --mono: 'JetBrains Mono','SFMono-Regular',Menlo,monospace;
+
+  --chan-h: 16px;   /* molten channel thickness */
+  --floor:  78px;   /* distance from bottom of .line to channel top */
+}
+
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0}
+html,body{background:var(--ink);color:var(--bone)}
+body{
+  font-family:var(--body);
+  font-size:14px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+img{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:disabled{cursor:default}
+a{color:inherit;text-decoration:none}
+
+/* --- shell ------------------------------------------------- */
+.shell{
+  /* sits to the right of the app's existing 165px sidebar */
+  margin-left:165px;
+  padding:22px 36px 0;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+}
+.shake{animation:shake .16s steps(3) 1}
+@keyframes shake{
+  0%{transform:translate(0,0)}
+  33%{transform:translate(-5px,2px)}
+  66%{transform:translate(4px,-2px)}
+  100%{transform:translate(0,0)}
+}
+
+/* --- top bar ----------------------------------------------- */
+.topbar{
+  display:flex;align-items:baseline;gap:20px;
+  border-bottom:1px solid var(--hair);
+  padding-bottom:12px;
+}
+.mark{
+  font-family:var(--disp);font-weight:800;font-size:30px;line-height:.84;
+  letter-spacing:-.01em;text-transform:uppercase;
+}
+.daymark{
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.topbar .spacer{flex:1}
+.records{
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--hair-2);padding-bottom:2px;
+}
+.records:hover,.records:focus-visible{color:var(--bone);border-color:var(--bone)}
+
+/* --- the line ---------------------------------------------- */
+.line{
+  position:relative;
+  flex:1;
+  display:grid;
+  grid-template-columns:minmax(162px,.60fr) minmax(300px,1.38fr) minmax(166px,.60fr) minmax(258px,1.02fr);
+  gap:0 24px;
+  align-items:end;
+  padding:14px 0 var(--floor);
+  min-height:0;
+}
+/* the tall vessels of the line. Only Bank is a short block, so the
+   silhouette dips once, where the line hands the run over. */
+.stn-forge,.stn-strike,.stn-chest{align-self:stretch}
+/* while you are AT the forge it is a compact block on the floor;
+   once you carry a weapon it becomes the rack that holds it */
+.stn-forge.is-live{align-self:end}
+.stn-forge>.stn-body,.stn-strike>.stn-body,.stn-chest>.stn-body{
+  height:100%;display:flex;flex-direction:column;
+}
+
+/* the molten channel: hollow trough, filled to where you stand */
+.channel{
+  position:absolute;left:0;right:0;
+  bottom:calc(var(--floor) - var(--chan-h));
+  height:var(--chan-h);
+  border-top:1px solid var(--hair-2);
+  border-bottom:1px solid var(--hair-2);
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(244,237,225,.05) 0 3px, transparent 3px 9px);
+  overflow:hidden;
+}
+.chan-fill{
+  position:absolute;left:0;top:0;bottom:0;
+  width:0;
+  background:
+    linear-gradient(180deg, rgba(244,237,225,.42) 0 3px, transparent 3px 6px),
+    repeating-linear-gradient(90deg,
+      var(--ember) 0 7px,
+      rgba(255,90,18,.66) 7px 14px);
+  background-size:100% 100%, 28px 100%;
+  transition:width .5s cubic-bezier(.2,.8,.2,1);
+  animation:flow .9s linear infinite;
+}
+@keyframes flow{to{background-position:0 0, 28px 0}}
+/* the slug: a hot billet that runs the channel when you bank */
+.slug{
+  position:absolute;top:-5px;bottom:-5px;width:78px;left:0;
+  background:linear-gradient(90deg,
+    rgba(255,90,18,0) 0,
+    var(--ember) 40%,
+    rgba(244,237,225,.55) 84%,
+    var(--bone) 100%);
+  opacity:0;
+}
+/* the line surges while it is carrying a run to the chest */
+.channel{transition:transform .18s ease}
+.channel.pouring{transform:scaleY(1.4)}
+.bar.hit{background-color:rgba(255,90,18,.22)}
+.stn-chest.hit>.stn-body{border-color:var(--ember)}
+
+/* --- station block ----------------------------------------- */
+.stn{position:relative;padding-bottom:0}
+.stn-body{
+  border:1px solid var(--hair);
+  border-bottom:2px solid var(--hair-2);
+  padding:16px;
+  background:rgba(244,237,225,.012);
+  transition:opacity .3s ease, border-color .3s ease;
+}
+.stn.is-ahead .stn-body{opacity:.46}
+/* the feed slot is an input to the line, not a control of one station:
+   it stays lit even when the Strike station is still ahead of you */
+.stn-strike.is-ahead>.stn-body{opacity:1}
+.stn-strike.is-ahead .strike-inner{opacity:.46}
+.stn.is-live  .stn-body{
+  border-color:var(--bone);
+  border-bottom:2px solid var(--ember);
+  box-shadow:6px 6px 0 rgba(255,90,18,.20);
+  background:rgba(244,237,225,.03);
+}
+.stn.is-ready .stn-body{border-color:var(--hair-2);border-bottom:2px solid var(--hair-2)}
+
+.verb{
+  font-family:var(--disp);font-weight:800;font-size:30px;line-height:.84;
+  text-transform:uppercase;letter-spacing:-.005em;
+  margin-bottom:12px;color:var(--bone);
+}
+.stn.is-ahead .verb{color:var(--muted)}
+.stn.is-live .verb{color:var(--ember)}
+
+/* floor label: sits under the channel, on the factory floor */
+.floorlab{
+  position:absolute;left:0;top:calc(100% + var(--chan-h) + 10px);
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  white-space:nowrap;
+}
+.stn.is-live .floorlab{color:var(--ember)}
+
+/* --- shared small parts ------------------------------------ */
+.k{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lab{
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+}
+.note{font-size:12px;color:var(--muted);line-height:1.4}
+
+.btn{
+  display:block;width:100%;
+  font-family:var(--disp);font-weight:800;font-size:26px;line-height:1;
+  text-transform:uppercase;letter-spacing:.01em;
+  padding:13px 14px 11px;
+  background:var(--ember);color:var(--ink);
+  border:1px solid var(--ember);
+  transition:transform .08s ease, box-shadow .12s ease;
+  box-shadow:4px 4px 0 rgba(255,90,18,.28);
+  text-align:center;
+}
+.btn:hover{box-shadow:6px 6px 0 rgba(255,90,18,.45)}
+.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(255,90,18,.28)}
+.btn-ghost{
+  background:none;color:var(--bone);border:1px solid var(--bone);
+  box-shadow:4px 4px 0 rgba(244,237,225,.14);
+}
+.btn-ghost:hover{background:rgba(244,237,225,.07);box-shadow:6px 6px 0 rgba(244,237,225,.22)}
+.btn:disabled{
+  background:none;color:var(--muted);border-color:var(--hair);
+  box-shadow:none;transform:none;
+}
+:focus-visible{outline:2px solid var(--bone);outline-offset:3px}
+
+/* --- FORGE ------------------------------------------------- */
+#forgeIdle,#forgeHeld{flex:1;display:flex;flex-direction:column;min-height:0}
+#forgeIdle[hidden],#forgeHeld[hidden]{display:none}
+.rack{margin:0 0 auto;padding:2px 0 0}
+.odds{border-top:1px solid var(--hair);padding-top:14px;display:grid;gap:13px}
+.wide{display:inline}
+.odds-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:13px;color:var(--muted);
+}
+.odds-row b{color:var(--bone);font-weight:700;font-size:16px}
+.odds-row .d{color:var(--ember);font-weight:600;font-size:13px}
+.wpn-art{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:4px 0}
+.wpn-art img{height:292px;width:auto;max-width:100%;object-fit:contain}
+.wpn-tier{
+  font-family:var(--disp);font-weight:800;font-size:40px;line-height:.84;
+  text-transform:uppercase;color:var(--bone);
+}
+.wpn-dice{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--ember)}
+.cost{margin-top:11px;border-top:1px solid var(--hair);padding-top:9px}
+.forge-ctl{padding-top:15px}
+.forge-ctl .btn{font-size:23px;white-space:nowrap}
+
+/* --- STRIKE ------------------------------------------------ */
+.hopper{
+  border:1px solid var(--warden);
+  border-bottom:0;
+  padding:10px 12px 11px;
+  margin-bottom:0;
+  position:relative;
+  background:rgba(39,185,252,.055);
+}
+.hopper:after{ /* chevron: the feed drops INTO the strike station */
+  content:"";position:absolute;left:22px;bottom:-9px;
+  width:0;height:0;
+  border-left:9px solid transparent;border-right:9px solid transparent;
+  border-top:9px solid var(--warden);
+}
+.hopper-head{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
+.hopper-head .lab{color:var(--warden);letter-spacing:.18em}
+.hopper-head .k{font-size:11px;color:var(--muted);margin-left:auto}
+.feed-btn{
+  display:inline-block;
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  letter-spacing:.02em;
+  padding:7px 12px;
+  border:1px solid var(--ember);color:var(--ember);
+  background:none;
+  transition:background .12s ease,color .12s ease;
+}
+.feed-btn:hover{background:var(--ember);color:var(--ink)}
+.hopper .note{margin-top:7px;font-size:11.5px}
+
+.strike-inner{flex:1;display:flex;flex-direction:column;padding:0 16px}
+.arena{
+  position:relative;flex:1;
+  display:flex;align-items:center;gap:18px;
+  padding:10px 0 14px;
+  border-bottom:1px solid var(--hair);
+  min-height:0;
+}
+.warden-art{position:relative;flex:0 0 auto}
+.warden-art img{width:192px;height:auto}
+.stn.is-live .warden-art img{animation:idle 3.2s ease-in-out infinite}
+@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.flinch{animation:flinch .22s steps(2) 1 !important}
+@keyframes flinch{
+  0%{transform:translate(0,0);filter:brightness(2.4)}
+  50%{transform:translate(9px,-3px);filter:brightness(1.6)}
+  100%{transform:translate(0,0);filter:none}
+}
+.warden-id{flex:1;min-width:0;padding-bottom:6px}
+.warden-name{
+  font-family:var(--disp);font-weight:800;font-size:37px;line-height:.84;
+  text-transform:uppercase;color:var(--warden);
+}
+.warden-id .note{margin-top:7px}
+.warden-id .note b{color:var(--warden);font-weight:600}
+
+.dmg{
+  position:absolute;left:82px;top:34px;
+  font-family:var(--mono);font-weight:700;font-size:38px;
+  color:var(--ember);pointer-events:none;opacity:0;
+  text-shadow:2px 2px 0 var(--ink);
+}
+.dmg.go{animation:punch .72s cubic-bezier(.16,1,.3,1) 1}
+@keyframes punch{
+  0%{opacity:0;transform:translate(0,10px) scale(.5)}
+  18%{opacity:1;transform:translate(0,0) scale(1.25)}
+  32%{transform:translate(0,-4px) scale(1)}
+  100%{opacity:0;transform:translate(0,-58px) scale(1)}
+}
+.dmg.miss{color:var(--bone);font-size:26px}
+
+/* run readout */
+.run{display:flex;gap:0;padding:11px 0 0}
+.run-cell{flex:1;border-left:1px solid var(--hair);padding-left:11px}
+.run-cell:first-child{border-left:0;padding-left:0}
+.run-cell .lab{display:block;margin-bottom:3px}
+.run-cell .v{font-family:var(--mono);font-size:20px;font-weight:700;line-height:1}
+.run-cell.risky .v{color:var(--ember)}
+
+/* risk heat bar: tightens and heats as shatter risk climbs */
+.heat{
+  height:9px;margin-top:13px;position:relative;
+  border:1px solid var(--hair-2);
+  background:repeating-linear-gradient(90deg,
+    rgba(244,237,225,.14) 0 2px, transparent 2px 6px);
+}
+.heat-fill{
+  position:absolute;left:0;top:0;bottom:0;width:0;
+  background:repeating-linear-gradient(90deg,
+    var(--ember) 0 3px, rgba(255,90,18,.45) 3px 6px);
+  transition:width .35s ease;
+  animation:pulse var(--beat,1.6s) steps(2) infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.52}}
+.strike-ctl{margin-top:13px}
+.strike-ctl .note{margin-top:9px}
+
+/* --- BANK -------------------------------------------------- */
+.bank-fig{
+  font-family:var(--mono);font-weight:700;font-size:52px;line-height:.9;
+  color:var(--ember);
+}
+.stn.is-ahead .bank-fig{color:var(--muted)}
+.bank-sub{margin-top:2px}
+.bank-ctl{margin-top:16px}
+.bank-note{margin-top:11px;border-top:1px solid var(--hair);padding-top:9px}
+
+/* --- THE CHEST (terminus) ---------------------------------- */
+.chest-body{border-color:var(--hair-2)}
+.chest-art{
+  position:relative;flex:1;min-height:0;
+  display:flex;align-items:center;justify-content:center;padding:10px 0;
+}
+.chest-art img{width:192px;height:auto;max-height:100%;object-fit:contain}
+.chest-art.jolt img{animation:jolt .4s steps(3) 1}
+@keyframes jolt{
+  0%{transform:translate(0,0) scale(1)}
+  30%{transform:translate(0,-7px) scale(1.06)}
+  60%{transform:translate(0,2px) scale(.98)}
+  100%{transform:translate(0,0) scale(1)}
+}
+.chip{
+  position:absolute;width:6px;height:6px;background:var(--ember);
+  left:50%;top:42%;opacity:0;pointer-events:none;
+}
+.money{min-width:0}
+.money-fig{
+  font-family:var(--disp);font-weight:800;font-size:108px;line-height:.78;
+  color:var(--ember);letter-spacing:-.025em;
+  font-variant-numeric:tabular-nums;
+}
+.money-cap{font-family:var(--disp);font-weight:600;font-size:26px;line-height:1;
+  text-transform:uppercase;letter-spacing:.02em;color:var(--bone);margin-top:5px}
+.money-mix{margin-top:8px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+.share{margin-top:auto;border-top:1px solid var(--hair);padding-top:13px}
+.share-head{display:flex;align-items:baseline;justify-content:space-between}
+.share-head .v{font-family:var(--mono);font-size:15px;font-weight:700}
+.bar{
+  height:20px;margin-top:9px;position:relative;
+  border:1px solid var(--hair-2);
+  background:repeating-linear-gradient(90deg,
+    rgba(244,237,225,.07) 0 3px, transparent 3px 9px);
+}
+.bar-fill{
+  position:absolute;left:0;top:0;bottom:0;width:0;
+  background:repeating-linear-gradient(90deg,
+    var(--ember) 0 5px, rgba(255,90,18,.6) 5px 10px);
+  transition:width .55s cubic-bezier(.2,.8,.2,1);
+}
+.bar-edge{
+  position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--bone);
+  transition:left .55s cubic-bezier(.2,.8,.2,1);opacity:.85;
+}
+.stake{
+  margin-top:11px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:13px;
+}
+.stake .big{font-size:22px;font-weight:700;color:var(--ember)}
+.stake .alt{color:var(--muted);font-size:12px}
+
+/* --- ticker ------------------------------------------------ */
+.ticker{
+  border-top:1px solid var(--hair);
+  padding:11px 0 16px;
+  display:flex;gap:30px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+}
+.ticker b{color:var(--bone);font-weight:600}
+.ticker span:first-child{color:var(--bone)}
+
+/* between the app's narrow-sidebar breakpoint and mobile, the line keeps
+   its geometry and just loses scale */
+@media (max-width:1320px){
+  .shell{margin-left:0;padding:20px 26px 0}
+  .money-fig{font-size:84px}
+  .money-cap{font-size:22px}
+  .warden-art img{width:160px}
+  .warden-name{font-size:31px}
+  .wpn-art img{height:236px}
+  .chest-art img{width:150px}
+  .verb{font-size:26px}
+  .btn{font-size:23px}
+  .bank-fig{font-size:44px}
+}
+
+/* --- mobile rail (hidden on desktop) ----------------------- */
+.rail{display:none}
+
+/* --- dev state toggle (not part of the design) ------------- */
+.dev{
+  position:fixed;right:10px;bottom:9px;z-index:9;
+  font-family:var(--mono);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--hair);padding:4px 8px;opacity:.5;
+}
+.dev:hover{opacity:1}
+
+/* ============================================================
+   MOBILE 390x844
+   The line does not shrink, it FOLDS: the four stations collapse
+   into a horizontal rail at the top (same molten channel, same
+   left-to-right order, same lit/dim rule), the chest terminus
+   becomes the money strip above it, and only the station you are
+   standing at expands to full width with its controls in the
+   bottom third of the screen where a thumb reaches.
+   ============================================================ */
+@media (max-width:900px){
+  .shell{margin-left:0;padding:11px 16px 0}
+  .topbar{padding-bottom:10px;gap:12px}
+  .mark{font-size:22px}
+  .daymark{font-size:9.5px;letter-spacing:.1em}
+  .records{font-size:9.5px}
+
+  .line{
+    display:flex;flex-direction:column;align-items:stretch;gap:9px;
+    padding:9px 0 0;grid-template-columns:none;
+  }
+  .channel{display:none}
+  .stn{order:3}
+  .stn-chest{order:0}
+  .stn-strike{order:2}
+  .stn-forge{order:3}
+  .stn-bank{order:4}
+  .floorlab{display:none}
+  .stn-body{padding:12px}
+  .verb{font-size:22px;margin-bottom:8px}
+
+  /* stations you are not standing at are represented by the rail.
+     The Warden stays: it is today's host, not a control. */
+  .stn-forge.is-ahead,.stn-bank.is-ahead{display:none}
+  .stn-forge:not(.is-live){display:none}
+  .stn-strike.is-ahead .run,
+  .stn-strike.is-ahead .heat,
+  .stn-strike.is-ahead .strike-ctl{display:none}
+  .stn-strike.is-ahead .arena{border-bottom:0;padding-bottom:2px}
+  .stn-strike.is-ahead .warden-art img{width:74px}
+  .wide{display:none}
+  .odds{gap:8px;padding-top:11px}
+  .odds-row{font-size:12px}
+  .odds-row b{font-size:14px}
+  .odds-row .d{font-size:12px}
+  .cost{margin-top:9px;padding-top:8px}
+  .forge-ctl{padding-top:11px}
+  .rail{padding-bottom:16px}
+
+  /* chest becomes the money strip: the terminus, read first */
+  .stn-chest .verb{display:none}
+  .chest-body{border:0;border-bottom:1px solid var(--hair);padding:0 0 11px;position:relative}
+  .chest-art{position:absolute;right:0;top:0;flex:none;padding:0;min-height:0}
+  .chest-art img{width:78px}
+  .money-fig{font-size:46px}
+  .money-cap{font-size:15px;margin-top:3px}
+  .money-mix{font-size:10.5px}
+  .share{margin-top:12px;padding-top:10px}
+  .bar{height:12px}
+  .stake{margin-top:9px}
+  .stake .big{font-size:18px}
+
+  /* bank folds into one row so the swing control keeps the bottom third */
+  .stn-bank>.stn-body{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px}
+  .stn-bank .verb{margin:0}
+  .bank-fig{font-size:30px;line-height:1}
+  .bank-sub{margin:0}
+  .bank-ctl{margin:0 0 0 auto;min-width:148px}
+  .bank-ctl .btn{font-size:19px;padding:9px 10px 8px}
+  .bank-note{width:100%;margin:0;border-top:0;padding-top:0;font-size:11px}
+
+  /* the rail: the whole line, folded */
+  .rail{
+    display:block;order:1;position:relative;
+    padding:0 0 20px;
+  }
+  .rail-track{
+    position:absolute;left:0;right:0;bottom:12px;height:10px;
+    border-top:1px solid var(--hair-2);border-bottom:1px solid var(--hair-2);
+    overflow:hidden;
+  }
+  .rail-fill{
+    position:absolute;left:0;top:0;bottom:0;width:0;
+    background:repeating-linear-gradient(90deg,
+      var(--ember) 0 6px, rgba(255,90,18,.6) 6px 12px);
+    background-size:24px 100%;
+    transition:width .5s cubic-bezier(.2,.8,.2,1);
+    animation:flow .9s linear infinite;
+  }
+  .rail-stops{display:flex;justify-content:space-between;align-items:flex-end}
+  .rail-stop{
+    font-family:var(--disp);font-weight:800;font-size:17px;line-height:.84;
+    text-transform:uppercase;color:var(--muted);
+  }
+  .rail-stop.on{color:var(--ember)}
+  .rail-stop.done{color:var(--bone)}
+  .rail-stop.end{color:var(--bone)}
+
+  .strike-inner{padding:0 12px}
+  .hopper{padding:8px 12px 9px}
+  .hopper .note{margin-top:5px}
+  .arena{padding:6px 0 8px;flex:none}
+  .warden-art img{width:86px}
+  .warden-name{font-size:22px}
+  .dmg{left:52px;top:14px;font-size:30px}
+  .run{padding:7px 0 0}
+  .run-cell .v{font-size:17px}
+  .heat{margin-top:9px;height:8px}
+  .strike-ctl{margin-top:9px}
+  .strike-ctl .note{margin-top:7px;font-size:11px}
+  .btn{font-size:24px;padding:13px 12px 11px}
+  .ticker{gap:0;flex-direction:column;padding:7px 0 10px;font-size:10px}
+  .ticker div{padding:2px 0}
+  .ticker div:nth-child(3){display:none}
+  .hopper-head .lab{font-size:9px}
+  .hopper .note{font-size:11px}
+}
+
+/* --- reduced motion: everything collapses to static --------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none !important;
+    transition:none !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="shell" id="shell">
+
+  <header class="topbar">
+    <span class="mark">Crucible</span>
+    <span class="daymark">Day 29 &middot; S3 13d 16h left</span>
+    <span class="spacer"></span>
+    <a class="records" href="#">Records</a>
+  </header>
+
+  <main class="line" id="line">
+
+    <!-- molten channel: the factory floor. Solid behind you, hollow ahead. -->
+    <div class="channel" id="channel" aria-hidden="true">
+      <div class="chan-fill" id="chanFill"></div>
+      <div class="slug" id="slug"></div>
+    </div>
+
+    <!-- folded line, mobile only -->
+    <div class="rail" aria-hidden="true">
+      <div class="rail-stops">
+        <span class="rail-stop" id="railForge">Forge</span>
+        <span class="rail-stop" id="railStrike">Strike</span>
+        <span class="rail-stop" id="railBank">Bank</span>
+        <span class="rail-stop end">Chest</span>
+      </div>
+      <div class="rail-track"><div class="rail-fill" id="railFill"></div></div>
+    </div>
+
+    <!-- ============ FORGE ============ -->
+    <section class="stn stn-forge" id="stnForge">
+      <div class="stn-body">
+        <h2 class="verb">Forge</h2>
+
+        <div id="forgeIdle">
+          <div class="rack">
+            <div class="odds">
+              <div class="odds-row"><span>Common</span><b class="k">60%</b><b class="k d">1d4</b></div>
+              <div class="odds-row"><span>Rare</span><b class="k">25%</b><b class="k d">1d6</b></div>
+              <div class="odds-row"><span>Epic</span><b class="k">12%</b><b class="k d">2d6</b></div>
+              <div class="odds-row"><span>Legendary</span><b class="k">3%</b><b class="k d">3d6</b></div>
+            </div>
+            <div class="cost note">About <span class="k">$0.03</span> each<span class="wide">, paid in $BURN, rORE and $RONKESTR</span>.</div>
+          </div>
+          <div class="forge-ctl">
+            <button class="btn" id="btnForge">Forge a weapon</button>
+          </div>
+        </div>
+
+        <div id="forgeHeld" hidden>
+          <div class="wpn-art">
+            <img id="wpnImg" src="assets/weapon-rare.png" alt="Rare sword">
+          </div>
+          <div class="wpn-tier" id="wpnTier">Rare</div>
+          <div class="wpn-dice k" id="wpnDice">1d6</div>
+          <div class="cost note">In hand. It breaks or you bank it.</div>
+        </div>
+      </div>
+      <span class="floorlab" id="labForge">ready</span>
+    </section>
+
+    <!-- ============ STRIKE ============ -->
+    <section class="stn stn-strike" id="stnStrike">
+      <div class="stn-body" style="padding-top:0;padding-left:0;padding-right:0">
+
+        <!-- the feed slot: an input to the line, always open -->
+        <div class="hopper" style="margin:0 -1px 0 -1px;border-top:0">
+          <div class="hopper-head">
+            <span class="lab">Feed slot</span>
+            <span class="k" id="offerCount">0 / 3 today</span>
+          </div>
+          <button class="feed-btn" id="btnFeed">Feed the Warden 6.9 $RONKESTR</button>
+          <p class="note">Every swing hits 15% harder. Up to 3 today.</p>
+        </div>
+
+        <div class="strike-inner">
+          <h2 class="verb" style="margin-top:16px">Strike</h2>
+
+          <div class="arena">
+            <div class="warden-art" id="wardenArt">
+              <img src="assets/wardens/ronke.png" alt="The Ronke Warden">
+              <div class="dmg k" id="dmgPop">+7</div>
+            </div>
+            <div class="warden-id">
+              <div class="warden-name">Ronke<br>Warden</div>
+              <p class="note">Ronkeverse holders hit <b>15% harder</b>.</p>
+            </div>
+          </div>
+
+          <div class="run">
+            <div class="run-cell">
+              <span class="lab">Swing</span>
+              <span class="v k" id="swingN">7</span>
+            </div>
+            <div class="run-cell">
+              <span class="lab">Banked</span>
+              <span class="v k" id="runDmg">18</span>
+            </div>
+            <div class="run-cell risky">
+              <span class="lab">Shatter</span>
+              <span class="v k" id="riskN">30%</span>
+            </div>
+          </div>
+          <div class="heat"><div class="heat-fill" id="heatFill"></div></div>
+
+          <div class="strike-ctl">
+            <button class="btn" id="btnSwing">Push &middot; 30%</button>
+            <p class="note" id="crackLine">Any swing can crack it open. About <span class="k">1 in 3,000</span>.</p>
+          </div>
+        </div>
+      </div>
+      <span class="floorlab" id="labStrike">live</span>
+    </section>
+
+    <!-- ============ BANK ============ -->
+    <section class="stn stn-bank" id="stnBank">
+      <div class="stn-body">
+        <h2 class="verb">Bank</h2>
+        <div class="bank-fig k" id="atRiskN">24</div>
+        <div class="bank-sub lab">At risk</div>
+        <div class="bank-ctl">
+          <button class="btn btn-ghost" id="btnBank">Bank 24</button>
+        </div>
+        <p class="note bank-note">Banked damage is your share.</p>
+      </div>
+      <span class="floorlab" id="labBank">ready</span>
+    </section>
+
+    <!-- ============ THE CHEST (terminus) ============ -->
+    <section class="stn stn-chest" id="stnChest">
+      <div class="stn-body chest-body">
+        <h2 class="verb">The chest</h2>
+        <div class="money">
+          <div class="money-fig" id="potFig">$0.00</div>
+          <div class="money-cap">in the chest</div>
+          <div class="money-mix">incl. 152 $RONKESTR ($0.72)</div>
+        </div>
+
+        <div class="chest-art" id="chestArt">
+          <img src="assets/chest-closed.png" alt="The chest">
+          <i class="chip"></i><i class="chip"></i><i class="chip"></i>
+          <i class="chip"></i><i class="chip"></i><i class="chip"></i>
+        </div>
+
+        <div class="share">
+          <div class="share-head">
+            <span class="lab">Your share</span>
+            <span class="v k" id="sharePct">20.4%</span>
+          </div>
+          <div class="bar">
+            <div class="bar-fill" id="barFill"></div>
+            <div class="bar-edge" id="barEdge"></div>
+          </div>
+          <div class="stake">
+            <span class="big" id="stakeUsd">$0.62</span>
+            <span class="alt"><span class="k" id="crackUsd">$1.39</span> if you crack it</span>
+          </div>
+        </div>
+      </div>
+      <span class="floorlab" id="labChest">926 banked</span>
+    </section>
+
+  </main>
+
+  <footer class="ticker" id="ticker">
+    <div><span>Puck</span> banked <b class="k">38</b> &middot; 2m ago</div>
+    <div><span>JohnnyCola</span> pushed a Rare and shattered &middot; 3m ago</div>
+    <div><span>xInes007</span> forged a Common &middot; 6m ago</div>
+  </footer>
+</div>
+
+<button class="dev" id="dev">state</button>
+
+<script>
+(function(){
+  'use strict';
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ---- live game numbers (game day 29) ---- */
+  var POT      = 3.82;      // USDC + RONKESTR, combined
+  var FINDER   = 0.20;      // finder's cut to whoever cracks it
+  var OTHERS   = 3603;      // Puck 2042 + JohnnyCola 1545 + xInes007 16
+  var TIERS = [
+    {name:'Common',    dice:'1d4', n:1, f:4, p:0.60, img:'assets/weapon-common.png'},
+    {name:'Rare',      dice:'1d6', n:1, f:6, p:0.25, img:'assets/weapon-rare.png'},
+    {name:'Epic',      dice:'2d6', n:2, f:6, p:0.12, img:'assets/weapon-epic.png'},
+    {name:'Legendary', dice:'3d6', n:3, f:6, p:0.03, img:'assets/weapon-legendary.png'}
+  ];
+
+  var S = {
+    weapon: TIERS[1],   // Rare, mid-run
+    swing: 7,
+    runDmg: 18,         // already banked this run
+    atRisk: 24,
+    banked: 926,
+    offers: 0
+  };
+
+  var $ = function(id){return document.getElementById(id);};
+  var shell=$('shell'), line=$('line');
+
+  /* first 5 swings cannot shatter, then 10% escalating +10% per swing, cap 90% */
+  function riskFor(sw){ return sw < 5 ? 0 : Math.min(0.90, 0.10 + (sw - 5) * 0.10); }
+  function sharePct(){ return S.banked / (S.banked + OTHERS); }
+  function stakeUsd(){ return POT * (1 - FINDER) * sharePct(); }
+  function crackUsd(){ return POT * FINDER + stakeUsd(); }
+  function usd(v){ return '$' + v.toFixed(2); }
+
+  /* ---------- the channel: molten to where you stand ---------- */
+  function stationX(el){
+    var lr = line.getBoundingClientRect(), r = el.getBoundingClientRect();
+    return (r.left - lr.left) + r.width * 0.55;
+  }
+  function reach(){
+    var el = S.weapon ? $('stnStrike') : $('stnForge');
+    return stationX(el);
+  }
+  function drawChannel(px){
+    var w = px === undefined ? reach() : px;
+    $('chanFill').style.width = Math.max(0, w) + 'px';
+    var pct = S.weapon ? 58 : 22;
+    $('railFill').style.width = pct + '%';
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    var has = !!S.weapon;
+    var risk = has ? riskFor(S.swing) : 0;
+
+    $('stnForge').className  = 'stn stn-forge '  + (has ? 'is-ahead' : 'is-live');
+    $('stnStrike').className = 'stn stn-strike ' + (has ? 'is-live'  : 'is-ahead');
+    $('stnBank').className   = 'stn stn-bank '   + (has && S.atRisk > 0 ? 'is-ready' : 'is-ahead');
+
+    $('labForge').textContent  = has ? 'done' : 'live';
+    $('labStrike').textContent = has ? 'live' : 'next';
+    $('labBank').textContent   = has && S.atRisk > 0 ? 'ready' : 'waiting';
+    $('labChest').textContent  = S.banked.toLocaleString() + ' banked';
+
+    $('railForge').className  = 'rail-stop ' + (has ? 'done' : 'on');
+    $('railStrike').className = 'rail-stop ' + (has ? 'on' : '');
+    $('railBank').className   = 'rail-stop ' + (has && S.atRisk > 0 ? 'done' : '');
+
+    $('forgeIdle').hidden = has;
+    $('forgeHeld').hidden = !has;
+    if(has){
+      $('wpnImg').src = S.weapon.img;
+      $('wpnImg').alt = S.weapon.name + ' sword';
+      $('wpnTier').textContent = S.weapon.name;
+      $('wpnDice').textContent = S.weapon.dice;
+    }
+
+    $('swingN').textContent = has ? S.swing : '0';
+    $('runDmg').textContent = has ? S.runDmg : '0';
+    $('riskN').textContent  = has ? (risk === 0 ? 'safe' : Math.round(risk*100) + '%') : '-';
+    $('heatFill').style.width = (risk * 100) + '%';
+    $('heatFill').style.setProperty('--beat', (1.7 - risk * 1.25).toFixed(2) + 's');
+
+    $('btnSwing').disabled = !has;
+    $('btnSwing').textContent = !has ? 'No weapon' :
+      (risk === 0 ? 'Swing' : 'Push · ' + Math.round(risk*100) + '%');
+
+    $('atRiskN').textContent = S.atRisk;
+    $('btnBank').textContent = S.atRisk > 0 ? 'Bank ' + S.atRisk : 'Nothing to bank';
+    $('btnBank').disabled = S.atRisk === 0;
+
+    $('offerCount').textContent = S.offers + ' / 3 today';
+    $('btnFeed').disabled = S.offers >= 3;
+    $('btnFeed').style.opacity = S.offers >= 3 ? .45 : 1;
+
+    var p = sharePct();
+    $('sharePct').textContent = (p*100).toFixed(1) + '%';
+    $('barFill').style.width = (p*100) + '%';
+    $('barEdge').style.left = (p*100) + '%';
+    $('stakeUsd').textContent = usd(stakeUsd());
+    $('crackUsd').textContent = usd(crackUsd());
+
+    drawChannel();
+  }
+
+  /* ---------- the pot is alive: count up on load ---------- */
+  function countPot(){
+    var el = $('potFig');
+    if(RM.matches){ el.textContent = usd(POT); return; }
+    var t0 = null, dur = 950;
+    function step(t){
+      if(t0 === null) t0 = t;
+      var k = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - k, 3);
+      el.textContent = usd(POT * e);
+      if(k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ---------- feedback ---------- */
+  function shake(){
+    if(RM.matches) return;
+    shell.classList.remove('shake');
+    void shell.offsetWidth;
+    shell.classList.add('shake');
+  }
+  function popDamage(txt, miss){
+    var d = $('dmgPop');
+    d.textContent = txt;
+    d.className = 'k dmg' + (miss ? ' miss' : '');
+    if(RM.matches){ return; }
+    void d.offsetWidth;
+    d.classList.add('go');
+    var art = $('wardenArt').firstElementChild;
+    art.classList.remove('flinch'); void art.offsetWidth; art.classList.add('flinch');
+  }
+
+  /* ---------- actions ---------- */
+  $('btnForge').addEventListener('click', function(){
+    var r = Math.random(), acc = 0, pick = TIERS[0];
+    for(var i=0;i<TIERS.length;i++){ acc += TIERS[i].p; if(r < acc){ pick = TIERS[i]; break; } }
+    S.weapon = pick; S.swing = 0; S.runDmg = 0; S.atRisk = 0;
+    render(); shake();
+  });
+
+  $('btnSwing').addEventListener('click', function(){
+    if(!S.weapon) return;
+    var risk = riskFor(S.swing);
+    if(risk > 0 && Math.random() < risk){
+      popDamage('shattered', true);
+      shake();
+      S.weapon = null; S.swing = 0; S.runDmg = 0; S.atRisk = 0;
+      setTimeout(render, 260);
+      return;
+    }
+    var raw = 0;
+    for(var i=0;i<S.weapon.n;i++) raw += 1 + Math.floor(Math.random()*S.weapon.f);
+    var dmg = Math.round(raw * (1 + 0.15 * S.offers) * 1.15); // Ronkeverse holder
+    S.swing++; S.atRisk += dmg;
+    popDamage('+' + dmg, false);
+    shake();
+    render();
+  });
+
+  $('btnFeed').addEventListener('click', function(){
+    if(S.offers >= 3) return;
+    S.offers++;
+    render();
+  });
+
+  /* ---------- BANK: the pour. The signature moment. ---------- */
+  var pouring = false;
+  $('btnBank').addEventListener('click', function(){
+    if(pouring || S.atRisk === 0) return;
+    var amount = S.atRisk;
+    pouring = true;
+    $('btnBank').disabled = true;
+
+    var from = stationX($('stnBank'));
+    var to   = $('channel').getBoundingClientRect().width;
+
+    if(RM.matches){ landPour(amount); pouring = false; return; }
+
+    // molten fills forward from Bank to the chest
+    $('channel').classList.add('pouring');
+    drawChannel(to);
+    var slug = $('slug');
+    slug.style.transition = 'none';
+    slug.style.left = from + 'px';
+    slug.style.opacity = '1';
+    void slug.offsetWidth;
+    slug.style.transition = 'left .52s cubic-bezier(.3,.7,.2,1)';
+    slug.style.left = (to - 54) + 'px';
+
+    setTimeout(function(){
+      slug.style.opacity = '0';
+      $('channel').classList.remove('pouring');
+      landPour(amount);
+      shake();
+      $('barFill').parentNode.classList.add('hit');
+      $('stnChest').classList.add('hit');
+      setTimeout(function(){
+        $('barFill').parentNode.classList.remove('hit');
+        $('stnChest').classList.remove('hit');
+      }, 480);
+      var art = $('chestArt');
+      art.classList.remove('jolt'); void art.offsetWidth; art.classList.add('jolt');
+      // hard ember chips kick out of the chest, no blur, no particles-for-decoration
+      var chips = art.querySelectorAll('.chip');
+      for(var i=0;i<chips.length;i++) fling(chips[i], i);
+      setTimeout(function(){
+        S.weapon = null; S.swing = 0; S.runDmg = 0;
+        render();
+        pouring = false;
+      }, 620);
+    }, 530);
+  });
+
+  function landPour(amount){
+    S.banked += amount;
+    S.runDmg += amount;
+    S.atRisk = 0;
+    var p = sharePct();
+    $('sharePct').textContent = (p*100).toFixed(1) + '%';
+    $('barFill').style.width = (p*100) + '%';
+    $('barEdge').style.left = (p*100) + '%';
+    $('stakeUsd').textContent = usd(stakeUsd());
+    $('crackUsd').textContent = usd(crackUsd());
+    $('labChest').textContent = S.banked.toLocaleString() + ' banked';
+    $('atRiskN').textContent = '0';
+  }
+
+  function fling(el, i){
+    var ang = (-140 + i * 22) * Math.PI / 180;
+    var d = 34 + (i % 3) * 13;
+    el.animate([
+      {transform:'translate(0,0)', opacity:1},
+      {transform:'translate(' + (Math.cos(ang)*d).toFixed(0) + 'px,' + (Math.sin(ang)*d).toFixed(0) + 'px)', opacity:0}
+    ], {duration: 420 + i*30, easing:'cubic-bezier(.2,.7,.4,1)'});
+  }
+
+  /* ---------- dev-only state toggle ---------- */
+  $('dev').addEventListener('click', function(){
+    if(S.weapon){ S.weapon = null; S.swing = 0; S.runDmg = 0; S.atRisk = 0; }
+    else { S.weapon = TIERS[1]; S.swing = 7; S.runDmg = 18; S.atRisk = 24; }
+    render();
+  });
+
+  window.addEventListener('resize', function(){ if(!pouring) drawChannel(); });
+
+  render();
+  countPot();
+})();
+</script>
+</body>
+</html>

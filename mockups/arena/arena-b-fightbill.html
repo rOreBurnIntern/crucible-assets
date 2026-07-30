@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crucible · Tonight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DIRECTION B - THE FIGHT BILL
+   The boss is the hero. The art is the page, not an image in a
+   container. Type is hand-set over it; controls sit on the art.
+   Tokens inherited from the front door. Radius 0 everywhere.
+   ============================================================ */
+
+:root{
+  --ink:    #100d0b;
+  --bone:   #f4ede1;
+  --muted:  #9a8d7d;
+  --ember:  #ff5a12;
+  --warden: #27B9FC;
+
+  --disp: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --body: 'Sora', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; border-radius:0; }
+[hidden]{ display:none !important; }
+
+html,body{ height:100%; }
+body{
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+
+img{ image-rendering: pixelated; image-rendering: crisp-edges; display:block; }
+
+/* ---------- stage ---------- */
+#stage{
+  position:relative;
+  width:100%;
+  min-height:100dvh;
+  overflow:hidden;
+}
+#bill{ position:absolute; inset:0; z-index:1; }
+
+/* ---------- the printed spot-colour panel behind the fighter ---------- */
+.panel{
+  position:absolute;
+  left:27%; top:-9%; right:-7%; bottom:-9%;
+  background: rgba(39,185,252,.16);
+  transform: rotate(2.2deg);
+}
+/* flat screen texture, hard lines, no blur */
+.panel::after{
+  content:"";
+  position:absolute; inset:0;
+  background: repeating-linear-gradient(46deg,
+     rgba(16,13,11,.16) 0 1px, transparent 1px 5px);
+  pointer-events:none;
+}
+
+/* ---------- the fighter ---------- */
+#boss{
+  position:absolute;
+  right: 9%;
+  bottom: -80px;
+  height: 640px;              /* 128px sprite at 5x */
+  width:auto;
+  z-index:2;
+  animation: bob 3.2s steps(1,end) infinite;
+}
+@keyframes bob{
+  0%,45%   { transform: translateY(0); }
+  50%,95%  { transform: translateY(-6px); }
+  100%     { transform: translateY(0); }
+}
+#boss.hit{ filter: brightness(0) invert(1); animation:none; }
+#boss.flinch{ animation: flinch .26s steps(3,end) 1; }
+@keyframes flinch{
+  0%   { transform: translate(0,0); }
+  40%  { transform: translate(14px, 6px); }
+  100% { transform: translate(0,0); }
+}
+
+/* ---------- header ---------- */
+.head{
+  position:absolute; top:0; left:0; right:0; height:54px;
+  z-index:6;
+  display:flex; align-items:center; gap:28px;
+  padding: 0 40px;
+  border-bottom: 1px solid rgba(244,237,225,.16);
+  background: var(--ink);
+}
+.mark{
+  font-family: var(--disp); font-weight:800; font-size:21px;
+  letter-spacing:.18em; line-height:1;
+}
+.daybar{ font-family: var(--mono); font-size:11px; letter-spacing:.1em; display:flex; gap:14px; }
+.daybar b{ font-weight:600; color: var(--bone); }
+.daybar span{ color: var(--muted); white-space:nowrap; }
+.daybar .narrow{ display:none; }
+.records{
+  margin-left:auto;
+  font-size:12px; font-weight:600; color:var(--muted);
+  padding-bottom:2px; border-bottom:1px solid transparent;
+}
+.records:hover, .records:focus-visible{ color:var(--bone); border-bottom-color: var(--ember); }
+
+/* ---------- left column: the bill ---------- */
+.bill-left{
+  position:absolute; left:40px; top:88px; z-index:5;
+  width: min(720px, 56vw);
+}
+.tonight{
+  font-family: var(--disp); font-weight:600; font-size:25px;
+  letter-spacing:.34em; color: var(--warden);
+  line-height:1; margin-bottom:8px;
+}
+.name{ font-family: var(--disp); font-weight:800; line-height:.84; letter-spacing:-.02em; }
+.name .l1,.name .l2{ display:block; transform-origin: 0 60%; }
+.name .l1{ font-size: clamp(64px, 12.4vw, 178px); transform: rotate(-2.4deg); }
+.name .l2{ font-size: clamp(56px, 10.8vw, 155px); transform: rotate(1.7deg); margin-left:.11em; }
+
+.setline{
+  margin-top: 14px;
+  font-size:13.5px; color: var(--warden); font-weight:600;
+}
+
+/* the purse tag, hanging off the name */
+.string{ width:1px; height:22px; background: rgba(244,237,225,.5); margin: 14px 0 0 44px; }
+.hang{ display:flex; align-items:flex-end; gap:20px; }
+.tag{
+  background: var(--ember);
+  color: var(--ink);
+  padding: 10px 22px 11px;
+  margin-left: 12px;
+  transform: rotate(-2.6deg);
+  box-shadow: 9px 9px 0 var(--bone);
+  flex: 0 0 auto;
+}
+.tag .lbl{
+  font-family: var(--mono); font-size:10px; font-weight:700;
+  letter-spacing:.26em; opacity:.72;
+}
+.tag .amt{
+  font-family: var(--disp); font-weight:800; font-size:68px; line-height:.82;
+  letter-spacing:-.02em; font-variant-numeric: tabular-nums;
+  margin-top:4px;
+}
+.tag .sub{ font-size:12px; font-weight:600; margin-top:2px; opacity:.82; }
+.tag .rk{ font-family: var(--mono); font-size:10.5px; margin-top:3px; opacity:.66; }
+
+.odds-note{
+  font-size:13px; color: var(--muted); max-width: 21ch;
+  padding-bottom: 6px;
+}
+.odds-note b{ color: var(--bone); font-weight:600; display:block; }
+
+/* ---------- right edge: the other fighters ---------- */
+.roster{
+  position:absolute; right:38px; top:84px; z-index:5; width: 320px;
+}
+.rhead{
+  display:grid; grid-template-columns: 1fr auto 62px; gap:12px;
+  font-family: var(--mono); font-size:9.5px; letter-spacing:.2em;
+  color: var(--muted); padding-bottom:7px;
+  border-bottom:1px solid rgba(244,237,225,.28);
+}
+.rrow{
+  display:grid; grid-template-columns: 1fr auto 62px; gap:12px;
+  align-items:baseline; padding: 9px 0;
+  border-bottom: 1px solid rgba(244,237,225,.08);
+}
+.rrow .who{ font-size:13px; font-weight:600; color: rgba(244,237,225,.86); }
+.rrow .dmg{ font-family: var(--mono); font-size:14px; font-weight:600; font-variant-numeric: tabular-nums; }
+.rrow .pct{ font-family: var(--mono); font-size:11px; color: var(--muted); text-align:right; font-variant-numeric: tabular-nums; }
+.rrow.you{ border-left: 3px solid var(--ember); padding-left:10px; margin-left:-13px; }
+.rrow.you .who{ color: var(--ember); }
+
+.rnote{ margin-top:12px; font-size:12.5px; color: rgba(244,237,225,.78); font-weight:600; }
+
+/* ---------- ticker: sits under the roster, clear of the fighter ---------- */
+.ticker{ margin-top:18px; }
+.ticker p{
+  font-family: var(--mono); font-size:10px; line-height:1.95;
+  color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ticker p:first-child{ color: rgba(244,237,225,.72); }
+
+/* ---------- controls, on the art, bottom left ---------- */
+.controls{
+  position:absolute; left:40px; bottom:36px; z-index:5;
+  width: min(648px, 51vw);
+}
+.readout{
+  display:flex; align-items:flex-end; gap:20px;
+  font-family: var(--mono); font-size:11.5px; letter-spacing:.06em;
+  color: var(--muted); margin-bottom:12px;
+}
+.readout .kv b{ color: var(--bone); font-weight:600; font-variant-numeric: tabular-nums; }
+.readout .wpn{
+  font-family: var(--disp); font-weight:800; font-size:26px; letter-spacing:.06em;
+  color: var(--bone); line-height:.9;
+}
+#sword{ height:92px; width:auto; margin-right:-4px; }
+#sword.forged{ animation: forgepop .42s steps(4,end) 1; }
+@keyframes forgepop{ from{ transform: translateY(26px) scale(.6); opacity:0; } to{ transform:none; opacity:1; } }
+
+.oddsrow{ display:flex; gap:0; margin-bottom:14px; border-top:1px solid rgba(244,237,225,.2); }
+.oddsrow div{
+  padding: 9px 20px 0 0; margin-right:20px;
+  border-right:1px solid rgba(244,237,225,.14);
+  font-family: var(--mono); font-size:11px; color:var(--muted);
+}
+.oddsrow div:last-child{ border-right:0; }
+.cost{ font-family: var(--mono); font-size:10.5px; color: var(--muted); margin: 12px 0 16px; }
+.oddsrow b{ display:block; color:var(--bone); font-size:15px; font-weight:600; margin-top:3px; }
+
+/* risk meter: hard ticks, tightens and heats as it climbs */
+.risk{ display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.ticks{ display:flex; gap:3px; }
+.ticks i{ width:15px; height:9px; background: rgba(244,237,225,.16); display:block; }
+.ticks i.on{ background: var(--ember); }
+.risk.hot .ticks{ gap:1px; animation: tremor .16s steps(2,end) infinite; }
+.risk.hot .lab b{ color: var(--ember); }
+@keyframes tremor{ 0%{transform:translate(0,0);} 50%{transform:translate(1px,-1px);} 100%{transform:translate(0,0);} }
+.risk .lab{ font-family: var(--mono); font-size:11px; color: var(--muted); letter-spacing:.06em; }
+.risk .lab b{ color: var(--bone); font-weight:600; }
+
+.act{ display:flex; align-items:stretch; gap:14px; }
+.primary{
+  background: var(--ember); color: var(--ink);
+  font-family: var(--disp); font-weight:800; font-size:34px; letter-spacing:.05em;
+  padding: 13px 40px 15px; line-height:1;
+  box-shadow: 7px 7px 0 var(--bone);
+  transition: transform .08s linear, box-shadow .08s linear;
+}
+.primary:hover{ transform: translate(2px,2px); box-shadow: 5px 5px 0 var(--bone); }
+.primary:active{ transform: translate(7px,7px); box-shadow: 0 0 0 var(--bone); }
+.secondary{
+  border:1px solid rgba(244,237,225,.55); color: var(--bone);
+  font-size:14px; font-weight:600; padding: 0 26px;
+  font-variant-numeric: tabular-nums;
+  transition: background .12s linear, border-color .12s linear;
+}
+.secondary:hover{ background: rgba(244,237,225,.1); border-color: var(--bone); }
+.secondary[disabled]{ opacity:.32; cursor:default; }
+.stake{ margin-left:6px; align-self:center; }
+.stake .big{ font-size:13.5px; font-weight:600; display:flex; align-items:baseline; gap:8px; }
+.stake .big b{ color: var(--ember); font-family: var(--mono); font-weight:700; font-size:22px; }
+.stake .sml{ font-size:11.5px; color: var(--muted); margin-top:3px; }
+.stake .sml b{ color: rgba(244,237,225,.8); font-family: var(--mono); font-weight:600; }
+
+.offer{
+  display:flex; align-items:center; gap:12px; width:100%;
+  margin-top:18px; padding: 12px 16px;
+  background: linear-gradient(rgba(39,185,252,.16), rgba(39,185,252,.16)), var(--ink);
+  border-left: 3px solid var(--warden);
+  font-size:13px; text-align:left;
+  transition: background .12s linear;
+}
+.offer:hover{ background: linear-gradient(rgba(39,185,252,.28), rgba(39,185,252,.28)), var(--ink); }
+.offer .arw{ margin-left:auto; color: var(--ember); font-size:15px; }
+
+/* damage numerals punched out of the boss */
+.pop{
+  position:absolute; z-index:7; pointer-events:none;
+  font-family: var(--mono); font-weight:700; font-size:66px;
+  color: var(--ember); text-shadow: 5px 5px 0 var(--ink);
+  font-variant-numeric: tabular-nums;
+  animation: pop .78s cubic-bezier(.16,1,.3,1) forwards;
+}
+.pop.miss{ color: var(--bone); font-size:30px; letter-spacing:.1em; }
+@keyframes pop{
+  0%   { transform: translate(-50%, 0) scale(.5); opacity:0; }
+  16%  { transform: translate(-50%, -14px) scale(1.25); opacity:1; }
+  100% { transform: translate(-50%, -158px) scale(.95); opacity:0; }
+}
+
+#stage.shake{ animation: shake .22s steps(2,end) 1; }
+@keyframes shake{
+  0%{ transform: translate(0,0); }  25%{ transform: translate(-7px,4px); }
+  50%{ transform: translate(6px,-5px); } 75%{ transform: translate(-3px,2px); }
+  100%{ transform: translate(0,0); }
+}
+
+/* ============================================================
+   SIGNATURE - THE POSTER TEARS
+   The bill is cloned into two shards, clipped along a jagged
+   seam and pulled apart. Light bleeds through from behind.
+   ============================================================ */
+#rift{ position:absolute; inset:0; z-index:4; display:none; overflow:hidden; background: var(--ink); }
+#rift.on{ display:block; }
+.rays{
+  position:absolute; inset:-40%;
+  background:
+    repeating-conic-gradient(from -6deg at 52% 46%, rgba(255,90,18,.82) 0 2.6deg, transparent 2.6deg 17deg),
+    repeating-conic-gradient(from  4deg at 52% 46%, rgba(244,237,225,.34) 0 1.1deg, transparent 1.1deg 29deg);
+  animation: burst .9s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes burst{ from{ transform: scale(.16) rotate(-8deg); opacity:0; } to{ transform: scale(1) rotate(0); opacity:1; } }
+.riftwrap{
+  position:absolute; inset:0; z-index:8; display:none;
+  flex-direction:column; align-items:center; justify-content:center; gap:4px;
+  opacity:0; animation: riftin .55s ease-out .72s forwards;
+  pointer-events:none;
+}
+.riftwrap.on{ display:flex; }
+@keyframes riftin{ to{ opacity:1; } }
+#riftchest{ height:320px; width:auto; margin-bottom:6px; filter: drop-shadow(9px 9px 0 var(--ink)); }
+.riftwrap h2{
+  font-family: var(--disp); font-weight:800; font-size:clamp(64px,11vw,150px);
+  line-height:.82; letter-spacing:-.02em; color: var(--bone);
+  text-shadow: 8px 8px 0 var(--ink);
+}
+.riftwrap .take{
+  font-family: var(--disp); font-weight:800; font-size:52px; color: var(--ink);
+  background: var(--ember); padding: 4px 20px 8px; margin-top:12px;
+  box-shadow: 7px 7px 0 var(--bone);
+}
+.riftwrap .fine{
+  font-size:13px; color: var(--bone); margin-top:22px; background: var(--ink);
+  padding:6px 12px;
+}
+.shard{ position:absolute; inset:0; z-index:6; background: var(--ink); will-change: transform; }
+.shard .head, .shard .dev{ }
+#shardTop{ animation: tearTop 1s cubic-bezier(.2,.9,.12,1) forwards; }
+#shardBot{ animation: tearBot 1s cubic-bezier(.2,.9,.12,1) forwards; }
+@keyframes tearTop{
+  0%{ transform: translate(0,0) rotate(0); }
+  14%{ transform: translate(6px,-4px) rotate(.4deg); }
+  100%{ transform: translate(-34px,-168px) rotate(-2.8deg); }
+}
+@keyframes tearBot{
+  0%{ transform: translate(0,0) rotate(0); }
+  14%{ transform: translate(-6px,5px) rotate(-.4deg); }
+  100%{ transform: translate(40px,206px) rotate(2.1deg); }
+}
+
+/* ---------- dev only ---------- */
+.dev{
+  position:fixed; right:8px; bottom:6px; z-index:40;
+  display:flex; gap:6px; align-items:center;
+  font-family: var(--mono); font-size:9.5px; letter-spacing:.08em;
+  color: rgba(154,141,125,.72);
+}
+.dev button{
+  border:1px solid rgba(154,141,125,.4); padding:3px 7px;
+  font-family: var(--mono); font-size:9.5px; color: rgba(154,141,125,.85);
+}
+.dev button:hover{ color: var(--bone); border-color: var(--bone); }
+.dev button[aria-pressed="true"]{ color: var(--ink); background: rgba(154,141,125,.8); }
+
+:focus-visible{ outline:2px solid var(--warden); outline-offset:3px; }
+
+/* ============================================================
+   MOBILE 390x844 - explicit collapse
+   Single column. The fighter fills the top. The name and purse
+   sit on it. The roster shortens to four hairline rows. The
+   whole control cluster is pinned to the bottom third so the
+   swing button is under the thumb, and the page scrolls behind it.
+   ============================================================ */
+@media (max-width: 820px){
+  body{ overflow-y:auto; overflow-x:hidden; }
+  #stage{ min-height: auto; }
+  #bill{ position:relative; inset:auto; }
+
+  .panel{ left:0; right:0; top:48px; height:410px; bottom:auto; transform:none; }
+  #boss{ height:384px; right:-10px; bottom:auto; top:74px; }
+
+  .head{ position:relative; height:48px; padding:0 16px; gap:14px; }
+  .mark{ font-size:17px; letter-spacing:.14em; }
+  .daybar{ font-size:10px; gap:9px; }
+  .daybar .wide{ display:none; }
+  .daybar .narrow{ display:inline; }
+
+  .bill-left{ position:relative; left:auto; top:auto; width:auto; padding: 26px 16px 0; }
+  .tonight{ font-size:18px; letter-spacing:.3em; margin-bottom:6px; }
+  .name .l1{ font-size:66px; } .name .l2{ font-size:57px; }
+  .setline{ margin-top:14px; font-size:12px; }
+  .string{ margin: 12px 0 0 26px; height:22px; }
+  .tag{ margin-left:0; padding:8px 16px 11px; }
+  .tag .amt{ font-size:58px; }
+  .odds-note{ margin: 18px 0 0; font-size:12.5px; max-width:none; }
+
+  .roster{ position:relative; right:auto; top:auto; width:auto; margin: 14px 16px 0; }
+  .rrow{ padding:7px 0; }
+  .ticker{ margin-top:22px; }
+  .hang{ display:block; }
+  .tag{ display:inline-block; box-shadow: 6px 6px 0 var(--bone); }
+  .odds-note{
+    max-width:none; margin-top:18px;
+    display:inline-block; background: var(--ink); padding:7px 10px 8px;
+  }
+
+  .controls{
+    position:fixed; left:0; right:0; bottom:0; width:auto;
+    padding: 12px 16px 14px;
+    background: var(--ink);
+    border-top: 1px solid rgba(244,237,225,.28);
+    z-index:20;
+  }
+  .readout{ gap:12px; margin-bottom:9px; font-size:10.5px; }
+  #sword{ height:60px; }
+  .readout .wpn{ font-size:20px; }
+  .oddsrow div{ padding-right:10px; margin-right:10px; font-size:9.5px; }
+  .oddsrow b{ font-size:13px; }
+  .risk{ margin-bottom:11px; }
+  .ticks i{ width:11px; height:8px; }
+  .act{ gap:9px; }
+  .primary{ font-size:26px; padding:11px 18px 13px; box-shadow:5px 5px 0 var(--bone); flex:1; }
+  .secondary{ padding:0 14px; font-size:13px; }
+  .stake{ display:none; }
+  .offer{ margin-top:11px; padding:9px 12px; font-size:11.5px; }
+  .mobstake{ display:flex; gap:14px; margin-top:10px; font-size:12px; }
+  .spacer{ height: 300px; }
+  #riftchest{ height:192px; }
+  .dev{ bottom:auto; top:56px; right:6px; }
+}
+@media (min-width: 821px){ .mobstake, .spacer{ display:none; } }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  #boss{ animation:none; }
+}
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- ===== the bill ===== -->
+  <div id="bill">
+    <div class="panel"></div>
+    <img id="boss" src="assets/wardens/ronke.png" alt="The Ronke Warden, tonight's boss, holding the chest">
+
+    <header class="head">
+      <div class="mark">CRUCIBLE</div>
+      <div class="daybar"><b>DAY 29</b><span class="wide">S3 13d 16h left</span><span class="narrow">S3 13d</span></div>
+      <a class="records" href="#">Records</a>
+    </header>
+
+    <div class="bill-left">
+      <div class="tonight">TONIGHT</div>
+      <h1 class="name"><span class="l1">RONKE</span><span class="l2">WARDEN</span></h1>
+      <p class="setline">Ronkeverse holders hit 15% harder.</p>
+
+      <div class="string"></div>
+      <div class="hang">
+        <div class="tag">
+          <div class="lbl">PURSE</div>
+          <div class="amt" id="pot">$0.00</div>
+          <div class="sub">in the chest</div>
+          <div class="rk">incl. 152 $RONKESTR ($0.72)</div>
+        </div>
+        <p class="odds-note">Any swing can crack it open. <b>About 1 in 3,000.</b></p>
+      </div>
+    </div>
+
+    <div class="roster">
+      <div class="rhead"><span></span><span>BANKED</span><span style="text-align:right">SHARE</span></div>
+      <div class="rrow"><span class="who">Puck</span><span class="dmg">2,042</span><span class="pct">45.1%</span></div>
+      <div class="rrow"><span class="who">JohnnyCola</span><span class="dmg">1,545</span><span class="pct">34.1%</span></div>
+      <div class="rrow you"><span class="who">skmd</span><span class="dmg" id="mine">926</span><span class="pct" id="minePct">20.4%</span></div>
+      <div class="rrow"><span class="who">xInes007</span><span class="dmg">16</span><span class="pct">0.4%</span></div>
+
+      <p class="rnote">Banked damage is your share.</p>
+
+      <div class="ticker">
+        <p>Puck banked 38 · 2m ago</p>
+        <p>JohnnyCola pushed a Rare and shattered · 3m ago</p>
+        <p>xInes007 forged a Common · 6m ago</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <!-- weapon in hand -->
+      <div class="readout" id="rdWeapon">
+        <img id="sword" src="assets/weapon-rare.png" alt="Rare sword">
+        <div class="wpn">RARE 1d6</div>
+        <div class="kv">swing <b id="swingN">7</b></div>
+        <div class="kv">banked <b id="bankedN">18</b></div>
+        <div class="kv">at risk <b id="riskN">24</b></div>
+      </div>
+
+      <!-- no weapon -->
+      <div class="oddsrow" id="rdOdds" hidden>
+        <div>Common <b>60%</b></div>
+        <div>Rare <b>25%</b></div>
+        <div>Epic <b>12%</b></div>
+        <div>Legendary <b>3%</b></div>
+      </div>
+      <p class="cost" id="cost">About $0.03 a craft, paid in $BURN, rORE and $RONKESTR.</p>
+
+      <div class="risk" id="riskWrap">
+        <div class="ticks" id="ticks"></div>
+        <div class="lab">shatter <b id="riskPct">30%</b></div>
+      </div>
+
+      <div class="act">
+        <button class="primary" id="btnMain">PUSH · 30%</button>
+        <button class="secondary" id="btnBank">Bank 24</button>
+        <div class="stake">
+          <div class="big">Your share <b id="share">$0.62</b></div>
+          <div class="sml"><b id="crackShare">$1.39</b> if you crack it</div>
+        </div>
+      </div>
+
+      <div class="mobstake">
+        <div>Your share <b style="color:var(--ember);font-family:var(--mono)" id="shareM">$0.62</b></div>
+        <div style="color:var(--muted)"><b style="color:rgba(244,237,225,.8);font-family:var(--mono)" id="crackShareM">$1.39</b> if you crack it</div>
+      </div>
+
+      <button class="offer">
+        <span>Feed the Warden 6.9 $RONKESTR. Every swing hits 15% harder. Up to 3 today.</span>
+        <span class="arw">&#9656;</span>
+      </button>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
+
+  <!-- ===== the tear ===== -->
+  <div id="rift">
+    <div class="rays"></div>
+  </div>
+
+  <div class="riftwrap" id="payoff">
+      <img id="riftchest" src="assets/chest-open.png" alt="The chest, cracked open">
+      <h2>CRACKED</h2>
+      <div class="take">$1.39 TO YOU</div>
+      <p class="fine">20% finder's cut. The rest splits by banked damage.</p>
+  </div>
+
+</div>
+
+<div class="dev">
+  <span>state</span>
+  <button id="devForge" aria-pressed="false">no weapon</button>
+  <button id="devArmed" aria-pressed="true">weapon</button>
+  <button id="devCrack">crack</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var POT = 3.82, FINDER = 0.20;
+  var OTHERS = 2042 + 1545 + 16;
+
+  var S = { weapon:'rare', banked:18, risk:24, swing:7, total:926 };
+
+  var $ = function(id){ return document.getElementById(id); };
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function shatterPct(){ return S.swing <= 5 ? 0 : Math.min(90, (S.swing - 5) * 10 + 10); }
+  function money(n){ return '$' + n.toFixed(2); }
+
+  function render(){
+    var armed = !!S.weapon;
+    $('rdWeapon').hidden = !armed;
+    $('rdOdds').hidden = armed;
+    $('cost').hidden = armed;
+    $('riskWrap').hidden = !armed;
+
+    $('swingN').textContent  = S.swing;
+    $('bankedN').textContent = S.banked;
+    $('riskN').textContent   = S.risk;
+
+    var p = shatterPct();
+    $('riskPct').textContent = p + '%';
+    var ticks = $('ticks').children;
+    for (var i = 0; i < ticks.length; i++){
+      ticks[i].className = (i * 10) < p ? 'on' : '';
+    }
+    $('riskWrap').classList.toggle('hot', p >= 40);
+
+    if (!armed){
+      $('btnMain').textContent = 'FORGE A WEAPON';
+    } else if (p === 0){
+      $('btnMain').textContent = 'SWING';
+    } else {
+      $('btnMain').textContent = 'PUSH · ' + p + '%';
+    }
+
+    $('btnBank').textContent = 'Bank ' + S.risk;
+    $('btnBank').disabled = !armed || S.risk === 0;
+    $('btnBank').hidden = !armed;
+
+    var pct = S.total / (S.total + OTHERS);
+    var share = POT * (1 - FINDER) * pct;
+    $('mine').textContent = S.total.toLocaleString('en-US');
+    $('minePct').textContent = (pct * 100).toFixed(1) + '%';
+    $('share').textContent = money(share);
+    $('shareM').textContent = money(share);
+    $('crackShare').textContent = money(share + POT * FINDER);
+    $('crackShareM').textContent = money(share + POT * FINDER);
+  }
+
+  /* ticks */
+  (function(){
+    var t = $('ticks');
+    for (var i = 0; i < 9; i++){ t.appendChild(document.createElement('i')); }
+  })();
+
+  /* the pot counts up on load: the money is the first thing that moves */
+  (function(){
+    var el = $('pot');
+    if (reduce){ el.textContent = money(POT); return; }
+    var t0 = null, dur = 950;
+    function step(t){
+      if (t0 === null) t0 = t;
+      var k = Math.min(1, (t - t0) / dur);
+      k = 1 - Math.pow(1 - k, 3);
+      el.textContent = money(POT * k);
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  })();
+
+  /* impact */
+  function hit(n, miss){
+    var stage = $('stage'), boss = $('boss');
+    if (!reduce){
+      stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+      boss.classList.add('hit');
+      setTimeout(function(){ boss.classList.remove('hit'); boss.classList.add('flinch'); }, 70);
+      setTimeout(function(){ boss.classList.remove('flinch'); }, 340);
+    }
+    var r = boss.getBoundingClientRect();
+    var pop = document.createElement('div');
+    pop.className = 'pop' + (miss ? ' miss' : '');
+    pop.textContent = miss ? 'SHATTERED' : n;
+    pop.style.left = (r.left + r.width * (0.34 + Math.random() * 0.3)) + 'px';
+    pop.style.top  = (r.top + r.height * (0.2 + Math.random() * 0.2)) + 'px';
+    $('stage').appendChild(pop);
+    setTimeout(function(){ pop.remove(); }, 820);
+  }
+
+  $('btnMain').addEventListener('click', function(){
+    if (!S.weapon){
+      S.weapon = 'rare'; S.swing = 1; S.risk = 0; S.banked = 0;
+      render();
+      var s = $('sword');
+      s.classList.remove('forged'); void s.offsetWidth; s.classList.add('forged');
+      return;
+    }
+    var p = shatterPct();
+    if (p > 0 && Math.random() * 100 < p){
+      hit(0, true);
+      S.weapon = null; S.risk = 0; S.swing = 1; S.banked = 0;
+      render();
+      return;
+    }
+    var roll = 1 + Math.floor(Math.random() * 6);
+    S.risk += roll; S.swing += 1;
+    hit(roll, false);
+    render();
+  });
+
+  $('btnBank').addEventListener('click', function(){
+    S.total += S.risk; S.banked += S.risk;
+    S.risk = 0; S.swing = 1;
+    render();
+  });
+
+  /* ---- dev only ---- */
+  function setState(armed){
+    if (armed){ S = { weapon:'rare', banked:18, risk:24, swing:7, total:926 }; }
+    else       { S = { weapon:null,  banked:0,  risk:0,  swing:1, total:926 }; }
+    $('devArmed').setAttribute('aria-pressed', armed ? 'true' : 'false');
+    $('devForge').setAttribute('aria-pressed', armed ? 'false' : 'true');
+    render();
+  }
+  $('devArmed').addEventListener('click', function(){ setState(true); });
+  $('devForge').addEventListener('click', function(){ setState(false); });
+
+  /* ---- the poster tears ---- */
+  function seam(){
+    var pts = [], n = 17, i, x, base, j;
+    for (i = 0; i <= n; i++){
+      x = i / n * 100;
+      base = 60 - x * 0.33;
+      j = (i === 0 || i === n) ? 0 : (i % 2 ? 1 : -1) * (2.4 + Math.random() * 3.6);
+      pts.push([x, base + j]);
+    }
+    return pts;
+  }
+  function poly(pts){ return pts.map(function(p){ return p[0].toFixed(2) + '% ' + p[1].toFixed(2) + '%'; }).join(', '); }
+
+  var cracked = false;
+  $('devCrack').addEventListener('click', function(){
+    if (cracked){ location.reload(); return; }
+    cracked = true;
+    var stage = $('stage'), bill = $('bill');
+    var s = seam(), rev = s.slice().reverse();
+
+    var top = bill.cloneNode(true), bot = bill.cloneNode(true);
+    top.id = 'shardTop'; bot.id = 'shardBot';
+    top.className = 'shard'; bot.className = 'shard';
+    top.style.clipPath = 'polygon(0% 0%, 100% 0%, ' + poly(rev) + ')';
+    bot.style.clipPath = 'polygon(' + poly(s) + ', 100% 100%, 0% 100%)';
+
+    bill.style.visibility = 'hidden';
+    $('rift').classList.add('on');
+    $('payoff').classList.add('on');
+    stage.appendChild(top); stage.appendChild(bot);
+
+    if (!reduce){
+      stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+    }
+    $('devCrack').textContent = 'reset';
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

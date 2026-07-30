@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crucible arena - three directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#100d0b; --bone:#f4ede1; --muted:#9a8d7d; --ember:#ff5a12; --warden:#27B9FC; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--bone);font-family:Sora,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:max(18px,env(safe-area-inset-top)) 20px max(28px,env(safe-area-inset-bottom))}
+  .wrap{max-width:720px;margin:0 auto}
+  .head{display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:3px solid var(--bone);padding-bottom:9px}
+  .house{font-family:'Big Shoulders Display',Impact,sans-serif;font-weight:800;
+    font-size:19px;letter-spacing:.14em;text-transform:uppercase}
+  .day{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  h1{font-family:'Big Shoulders Display',Impact,sans-serif;font-weight:800;
+    text-transform:uppercase;font-size:clamp(44px,12vw,86px);line-height:.86;
+    letter-spacing:-.012em;margin:20px 0 0}
+  .lede{font-size:15px;font-weight:600;color:var(--muted);margin-top:14px;max-width:52ch;line-height:1.45}
+  .note{font-size:13px;color:var(--muted);line-height:1.55;margin-top:16px;
+    border-left:2px solid var(--ember);padding-left:12px}
+  .note b{color:var(--bone)}
+  .list{margin-top:30px;display:grid;gap:14px}
+  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--muted);
+    padding:18px 18px 20px;transition:transform .12s ease,border-color .12s,box-shadow .12s}
+  a.card:hover{transform:translate(-3px,-3px);border-color:var(--bone);box-shadow:5px 5px 0 var(--bone)}
+  a.card:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--bone)}
+  .k{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ember);letter-spacing:.16em;text-transform:uppercase}
+  .t{font-family:'Big Shoulders Display',Impact,sans-serif;font-weight:800;text-transform:uppercase;
+    font-size:38px;line-height:.92;margin-top:8px}
+  .d{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .d b{color:var(--bone);font-weight:600}
+  .sig{font-size:13px;margin-top:10px;color:var(--warden)}
+  .rule{border:0;border-top:1px solid rgba(244,237,225,.18);margin:30px 0 0}
+  .foot{font-size:13px;color:var(--muted);margin-top:18px;line-height:1.55}
+  .foot a{color:var(--bone)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <span class="house">Crucible</span>
+    <span class="day">Arena &middot; three directions</span>
+  </div>
+
+  <h1>Pick the<br>arena.</h1>
+  <p class="lede">Three ways to rebuild the screen you actually play on. Same content in all
+    three, same real data from game day 29. Tap each one, then swing at the Warden.</p>
+
+  <p class="note">Mockups only. Nothing here is wired to the game and no live code was
+    touched. Each one carries <b>five things and nothing else</b>: the chest, the Warden,
+    your weapon and controls, the offering, and a thin ticker. Everything else you have
+    today (hunt log, chest log, boards, earnings) moves to a separate Records page.
+    Use the small <b>state</b> control to switch between having a weapon and not.</p>
+
+  <div class="list">
+    <a class="card" href="arena-a-purse.html">
+      <div class="k">Direction A</div>
+      <div class="t">The Purse</div>
+      <div class="d"><b>The prize is the hero.</b> The pot is the biggest thing on screen and
+        your share is stamped underneath it like a ticket. The controls live in a rail
+        pinned to the bottom that never scrolls away.</div>
+      <div class="sig">Signature: the pot counts up on a fill line marked with the last crack.</div>
+    </a>
+    <a class="card" href="arena-b-fightbill.html">
+      <div class="k">Direction B</div>
+      <div class="t">The Fight Bill</div>
+      <div class="d"><b>The boss is the hero.</b> Tonight's Warden fills the page and the type
+        sits on the art like a boxing bill. The purse hangs off the name. You act directly
+        on the boss.</div>
+      <div class="sig">Signature: crack the chest and the bill tears in half. Try the crack control.</div>
+    </a>
+    <a class="card" href="arena-c-foundryline.html">
+      <div class="k">Direction C</div>
+      <div class="t">The Foundry Line</div>
+      <div class="d"><b>The loop is the hero.</b> Forge, strike, bank, chest, running left to
+        right. Where you stand is lit and the rest is dim, so the order of play is a fact
+        on screen instead of an instruction.</div>
+      <div class="sig">Signature: banking pours damage down a molten channel into the chest.</div>
+    </a>
+  </div>
+
+  <hr class="rule">
+  <p class="foot">For comparison, the screen these replace:
+    <a href="shots/BEFORE-arena-desktop.png">desktop today</a> and
+    <a href="shots/BEFORE-arena-mobile.png">mobile today</a>, which runs 4,579px on a phone.</p>
+</div>
+</body>
+</html>
