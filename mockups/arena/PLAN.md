@@ -311,3 +311,31 @@ Four changes, all from the operator looking at the build.
 Screenshots: `shots/d-synthesis-{desktop,mobile}.png`, the forge state, and the overlay at
 both breakpoints.
 
+### D revision 3 (operator review, 2026-07-30)
+
+The rail was still busy: several families, several weights, two different underline
+devices, and a body-copy paragraph sitting next to monospaced data.
+
+1. **One type system in the rail.** Mono, uppercase, 12px, exactly two weights: labels are
+   muted 600, values are bone 700. The display face now appears on precisely two objects
+   down there, the Attack and Bank buttons, because they are the only things in the rail
+   that are not data. Every underline is gone.
+2. **The at-risk marker is the same ember square the live station uses**, rather than a
+   dashed underline of its own. Money state still survives colour blindness, and it costs
+   one device instead of three.
+3. **Chevrons carry the progression**: `Offer › Forge › Attack › Bank › Chest`, replacing
+   the drawn connector rules.
+4. **Every multiplier collapsed into one object.** The rail now reads
+   `Your damage ×1.45 [Boost]`, and the offering panel is gone. Behind the button is a
+   panel listing all four buffs, each with an On or Off tag, what it pays, and what it
+   takes to switch on. The offering action lives at the bottom of it.
+   This is where **Atia's Blessing (+3/5/8%)** and **holding RON (+10%)** finally become
+   visible, which they were not anywhere in the product before. Both are shown as available
+   to earn rather than active, which is honest: they need a linked wallet, and the RON buff
+   is still waiting on the next crack to be switched on in production.
+5. The panel closes with `Now ×1.45 → All on ×1.58`, so the upside of the two unearned
+   buffs is a number rather than an inference.
+
+The rail went from five type treatments to two, and from two objects on the right (offering
+copy plus an Offer button) to one.
+

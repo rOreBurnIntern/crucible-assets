@@ -254,46 +254,50 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* C's rail as a line, not four boxes. Current station is the BRIGHTEST thing
    on it: in C the live step was orange and the steps ahead were white, so the
    steps you could not reach shouted loudest. */
+/* ONE type system for the whole rail: mono, uppercase, 12px, two weights.
+   Labels are muted 600, values are bone 700. The display face appears on
+   exactly two things down here, the Attack and Bank buttons, because they are
+   the only objects that are not data. No underlines, no third size, no second
+   body font. */
 .line{
   display:flex;align-items:center;gap:0;
   padding:9px 0 10px;border-bottom:1px solid rgba(244,237,225,.12);
-  font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;
 }
-.line .st{display:flex;align-items:center;gap:11px;color:rgba(244,237,225,.34)}
-.line .st + .st{margin-left:11px}
-.line .st::before{content:"";width:22px;height:1px;background:rgba(244,237,225,.24);display:block}
-.line .st:first-child::before{display:none}
+.line .st{display:flex;align-items:center;gap:8px;color:rgba(244,237,225,.34)}
+.line .chev{color:rgba(244,237,225,.26);margin:0 11px;font-size:14px;letter-spacing:0}
 .line .st.done{color:rgba(244,237,225,.5)}
 .line .st.live{color:var(--bone);font-weight:700}
-.line .st.live em{
-  font-style:normal;display:inline-block;width:7px;height:7px;background:var(--ember);
-  margin-right:2px;
+/* the one state marker in the rail, reused everywhere it is needed rather than
+   inventing a second device */
+.line .st.live em,.status .s.risked b::before{
+  content:"";font-style:normal;display:inline-block;
+  width:7px;height:7px;background:var(--ember);
 }
-.line .st.ready{color:var(--bone);font-weight:600}
-.line .st.ready s{text-decoration:none;border-bottom:2px solid var(--ember);padding-bottom:2px}
+.line .st.ready{color:var(--bone);font-weight:700}
 /* the offering leads the sequence because it only buffs attacks that come
    after it, but it is optional and must not read as a gate */
-.line .st.opt{color:var(--warden);opacity:.75}
-.line .st.opt::after{content:"optional";margin-left:8px;font-size:9.5px;letter-spacing:.12em;color:var(--muted)}
+.line .st.opt{color:var(--warden)}
+.line .st.opt::after{content:"optional";font-size:9.5px;letter-spacing:.1em;color:var(--muted)}
 /* the craft price has to survive into the armed state: that is where the
    repeat spending happens and every direction dropped it there */
-.line .price{margin-left:auto;color:var(--muted);letter-spacing:.1em;text-transform:none;font-size:12px}
-.line .price b{color:rgba(244,237,225,.8);font-weight:600}
+.line .price{margin-left:auto;color:var(--muted);letter-spacing:.1em;text-transform:none}
+.line .price b{color:rgba(244,237,225,.8);font-weight:700}
 
 .status{
   display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-top:11px;
-  font-family:var(--mono);font-size:12px;letter-spacing:.05em;
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.05em;
   text-transform:uppercase;color:var(--muted);
 }
-.status .s{padding:0 15px;display:flex;align-items:baseline;gap:7px;border-left:1px solid rgba(244,237,225,.16)}
+.status .s{padding:0 15px;display:flex;align-items:center;gap:7px;border-left:1px solid rgba(244,237,225,.16)}
 .status .s:first-child{padding-left:0;border-left:0}
-.status .s b{color:var(--bone);font-weight:700;letter-spacing:.02em}
+.status .s b{color:var(--bone);font-weight:700;letter-spacing:.02em;display:flex;align-items:center;gap:6px}
 .status .s.tier b{color:var(--warden)}
-/* banked vs at-risk cannot be told apart by hue alone: it is money state at
-   ~10px, and it failed for the colour-blind reviewer in every direction */
-.status .s.safe b{border-bottom:2px solid rgba(244,237,225,.55);padding-bottom:1px}
-.status .s.risked b{color:var(--ember);border-bottom:2px dashed var(--ember);padding-bottom:1px}
-.status .s.risked::after{content:"at risk";position:absolute;left:-9999px}
+/* at-risk is marked by the same ember square the live station uses, not by a
+   colour or an underline of its own: money state must survive colour blindness
+   and it must not add a device */
+.status .s.risked b{color:var(--ember)}
 
 .meter{display:flex;gap:3px;margin-left:4px}
 .meter i{width:7px;height:12px;background:rgba(244,237,225,.16);display:block}
@@ -324,21 +328,58 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .btn-ghost:active{transform:translate(3px,3px);box-shadow:2px 2px 0 rgba(244,237,225,.24)}
 .btn small{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.04em;opacity:.85}
 
-/* the offering is priced in dollars like everything else. Leaving it in raw
-   tokens, two inches under a pot we happily price, read as deliberate. */
-.offering{
+/* every multiplier collapsed into one object: a label, a number, a button.
+   Same mono system as the rest of the rail. */
+.boost{
   margin-left:auto;display:flex;align-items:center;gap:16px;
-  border-left:3px solid var(--warden);padding:6px 0 6px 16px;max-width:474px;
+  border-left:3px solid var(--warden);padding:4px 0 4px 18px;
 }
-.offering p{font-size:13.5px;line-height:1.45;color:rgba(244,237,225,.9)}
-.offering p b{color:var(--bone);font-weight:700}
-.offering p em{font-style:normal;color:var(--warden);font-family:var(--mono);font-size:12px}
-.btn-offer{
-  border:1px solid var(--bone);color:var(--bone);padding:9px 15px;white-space:nowrap;
-  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+.boost-k{
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);
+}
+.boost-v{
+  font-family:var(--disp);font-weight:800;font-size:40px;line-height:.9;
+  color:var(--warden);font-variant-numeric:tabular-nums;
+}
+.btn-boost{
+  border:1px solid var(--bone);color:var(--bone);padding:11px 18px;white-space:nowrap;
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
   transition:background .15s ease,color .15s ease;
 }
-.btn-offer:hover{background:var(--bone);color:var(--ink)}
+.btn-boost:hover{background:var(--bone);color:var(--ink)}
+
+/* buff list inside the boost sheet, same two-weight mono discipline */
+.buffs{list-style:none;margin-top:4px}
+.buffs li{
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;
+  padding:13px 0 12px;border-bottom:1px solid rgba(244,237,225,.1);
+}
+.buffs .tag{
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;padding:3px 7px;
+}
+.buffs li.on .tag{background:var(--ember);color:var(--ink)}
+.buffs li.off .tag{border:1px solid rgba(244,237,225,.3);color:var(--muted)}
+.buffs .nm{font-size:16px;font-weight:700}
+.buffs li.off .nm{color:var(--muted)}
+.buffs .amt{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--bone)}
+.buffs li.off .amt{color:var(--muted)}
+.buffs p{grid-column:2 / -1;margin-top:5px;font-size:13px;line-height:1.5;color:var(--muted)}
+
+.buff-sum{
+  display:flex;align-items:baseline;gap:10px;margin-top:16px;padding-top:14px;
+  border-top:3px solid var(--bone);
+  font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);
+}
+.buff-sum b{font-family:var(--disp);font-weight:800;font-size:32px;line-height:.9;letter-spacing:0}
+.buff-sum b.now{color:var(--warden)}
+.buff-sum b.max{color:var(--bone)}
+.buff-sum .arrow{margin:0 4px}
+.sheet-fine{
+  margin-top:11px;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--muted);
+}
 
 body[data-state="forge"] .only-weapon{display:none}
 body[data-state="weapon"] .only-forge{display:none}
@@ -377,8 +418,8 @@ body[data-state="weapon"] .only-forge{display:none}
 .steps li b{font-size:17px;font-weight:700}
 .steps li p{margin-top:6px;font-size:14px;line-height:1.55;color:var(--muted)}
 .opttag{
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--warden);margin-left:9px;
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin-left:9px;
 }
 .sheet-go{margin-top:22px;width:100%;font-size:26px;height:56px}
 
@@ -444,7 +485,10 @@ body[data-state="weapon"] .only-forge{display:none}
   .steps li b{font-size:15px}
   .steps li p{font-size:12.5px;line-height:1.5;margin-top:4px}
   .opttag{display:block;margin-left:0;margin-top:3px}
-  .sheet-go{font-size:21px;height:46px;margin-top:14px}
+  /* the action label and its price stop fighting for one line on a phone */
+  .sheet-go{font-size:21px;height:auto;min-height:46px;padding:9px 14px;margin-top:14px;
+    flex-direction:column;gap:3px;line-height:1.05}
+  .sheet-go small{font-size:10.5px;letter-spacing:.06em}
 
   .kicker{margin-top:22px;font-size:11px;letter-spacing:.22em}
   .pot{font-size:88px;margin-top:8px}
@@ -482,9 +526,17 @@ body[data-state="weapon"] .only-forge{display:none}
   .btn-primary{box-shadow:5px 5px 0 var(--bone)}
   .btn-ghost{box-shadow:4px 4px 0 rgba(244,237,225,.24)}
   .btn small{font-size:11px}
-  .offering{grid-column:1 / -1;margin-left:0;max-width:none;order:-1;padding:5px 0 5px 11px;gap:10px}
-  .offering p{font-size:11.5px;line-height:1.35}
-  .btn-offer{padding:7px 10px;font-size:10px;letter-spacing:.09em}
+  .boost{grid-column:1 / -1;margin-left:0;order:-1;padding:4px 0 4px 11px;gap:12px}
+  .boost-k{font-size:10.5px;letter-spacing:.14em}
+  .boost-v{font-size:30px;margin-left:auto}
+  .btn-boost{padding:9px 13px;font-size:11px;letter-spacing:.14em}
+  .buffs li{padding:11px 0 10px;gap:10px}
+  .buffs .nm{font-size:14.5px}
+  .buffs .amt{font-size:14px}
+  .buffs p{font-size:12.5px;margin-top:4px}
+  .buff-sum{font-size:10.5px;letter-spacing:.12em;gap:7px;margin-top:13px;padding-top:11px}
+  .buff-sum b{font-size:26px}
+  .sheet-fine{font-size:10.5px}
   .pop{font-size:30px}
 }
 
@@ -533,6 +585,54 @@ body[data-state="weapon"] .only-forge{display:none}
       </li>
     </ol>
     <button class="btn btn-primary sheet-go" data-close>Got it</button>
+  </div>
+</div>
+
+<!-- Boosts. Everything that multiplies your damage, in one place, including the
+     two a player has not switched on yet. -->
+<div class="sheet" id="boostSheet" hidden>
+  <div class="sheet-scrim" data-close></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="boost-title">
+    <div class="sheet-head">
+      <h2 id="boost-title">Your damage</h2>
+      <button class="sheet-x" data-close aria-label="Close">&times;</button>
+    </div>
+
+    <ul class="buffs">
+      <li class="on">
+        <span class="tag">On</span>
+        <span class="nm">Ronkeverse NFT</span>
+        <span class="amt">+15%</span>
+        <p>Today's Warden is a Ronke. Your linked wallet holds one.</p>
+      </li>
+      <li class="on">
+        <span class="tag">On</span>
+        <span class="nm">Offerings &times;2</span>
+        <span class="amt">+30%</span>
+        <p>Two fed to the Warden today. One more allowed.</p>
+      </li>
+      <li class="off">
+        <span class="tag">Off</span>
+        <span class="nm">Atia's Blessing</span>
+        <span class="amt">+3%</span>
+        <p>Keep a 7 day streak in Axie Infinity. 30 days pays 5%, 100 days pays 8%.</p>
+      </li>
+      <li class="off">
+        <span class="tag">Off</span>
+        <span class="nm">Hold RON</span>
+        <span class="amt">+10%</span>
+        <p>Hold any RON in your linked wallet.</p>
+      </li>
+    </ul>
+
+    <div class="buff-sum">
+      <span>Now</span><b class="now">&times;1.45</b>
+      <span class="arrow">&rarr;</span>
+      <span>All on</span><b class="max">&times;1.58</b>
+    </div>
+
+    <button class="btn btn-primary sheet-go" data-close>Feed the Warden <small>6.9 $RONKESTR, about $0.03</small></button>
+    <p class="sheet-fine">One offering left today. It only boosts attacks made after it lands.</p>
   </div>
 </div>
 
@@ -609,9 +709,13 @@ body[data-state="weapon"] .only-forge{display:none}
     <div class="line" id="line">
       <button class="howto" id="howto">How to play</button>
       <span class="st opt" id="stOffer">Offer</span>
+      <span class="chev">&rsaquo;</span>
       <span class="st" id="stForge">Forge</span>
+      <span class="chev">&rsaquo;</span>
       <span class="st" id="stStrike">Attack</span>
+      <span class="chev">&rsaquo;</span>
       <span class="st" id="stBank">Bank</span>
+      <span class="chev">&rsaquo;</span>
       <span class="st" id="stChest">Chest</span>
       <span class="price">about <b>$0.03</b> a craft<span class="tokens">, in $BURN, rORE and $RONKESTR</span></span>
     </div>
@@ -644,9 +748,12 @@ body[data-state="weapon"] .only-forge{display:none}
 
       <button class="btn btn-primary only-forge" id="forge">Forge a weapon</button>
 
-      <div class="offering">
-        <p>Feed the Warden <em>6.9&nbsp;$RONKESTR, about&nbsp;$0.03</em>. Every attack hits <b>15% harder</b>. Up to <b>3 today</b>.</p>
-        <button class="btn-offer">Offer</button>
+      <!-- one object for every multiplier, replacing the offering panel. The
+           number is the whole point; the panel behind it is where you act. -->
+      <div class="boost">
+        <span class="boost-k">Your damage</span>
+        <span class="boost-v" id="boostVal">&times;1.45</span>
+        <button class="btn-boost" id="boostBtn">Boost</button>
       </div>
     </div>
 
@@ -675,16 +782,22 @@ body[data-state="weapon"] .only-forge{display:none}
     $('stChest').className  = 'st';
     $('stForge').innerHTML  = forging ? '<em></em>Forge' : 'Forge';
     $('stStrike').innerHTML = forging ? 'Attack' : '<em></em>Attack';
-    $('stBank').innerHTML   = (!forging && st.risk > 0) ? '<s>Bank</s>' : 'Bank';
+    $('stBank').innerHTML   = 'Bank';
   }
 
-  /* ---- how to play ---- */
-  var sheet = $('sheet');
-  function openSheet(){ sheet.hidden = false; sheet.querySelector('.sheet-x').focus(); }
-  function closeSheet(){ sheet.hidden = true; $('howto').focus(); }
-  $('howto').addEventListener('click', openSheet);
-  sheet.addEventListener('click', function(e){ if (e.target.closest('[data-close]')) closeSheet(); });
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !sheet.hidden) closeSheet(); });
+  /* ---- overlays: how to play, and boosts ---- */
+  function wireSheet(sheetId, openerId){
+    var sheet = $(sheetId), opener = $(openerId);
+    function close(){ sheet.hidden = true; opener.focus(); }
+    opener.addEventListener('click', function(){
+      sheet.hidden = false;
+      sheet.querySelector('.sheet-x').focus();
+    });
+    sheet.addEventListener('click', function(e){ if (e.target.closest('[data-close]')) close(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !sheet.hidden) close(); });
+  }
+  wireSheet('sheet', 'howto');
+  wireSheet('boostSheet', 'boostBtn');
 
   function renderRisk(){
     var pct = Math.round(st.shatter*100);
