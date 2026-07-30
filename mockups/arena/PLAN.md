@@ -467,6 +467,25 @@ $RONKESTR leg like the other two, accept the premium as a partner-day quirk and 
 lower the pinned amount. Worth noting it makes Ronke days, the ones aimed at onboarding a
 new community, the most expensive days to try the game.
 
+### Craft cost is now shown in tokens only (operator, 2026-07-30)
+
+Every dollar figure attached to *paying* is gone: the drawer headline, the rail, How to
+play, and the offering buttons. What you get is denominated in **attacks** instead
+(`87 attacks, near enough, from 10 crafts`), and the three token amounts become the price
+block under a `You pay` header, each one linked to where you get it.
+
+Prize figures are untouched and should stay: `$3.82`, `$0.62`, `$1.39` are **USDC**, the
+actual payout currency, not an estimate of one.
+
+⚠️ **On the record, since this was raised and decided against:** the dollar figure was the
+single best-performing element in the red team. The no-wallet persona called `$0.03` "the
+one number on this page I understand instantly", and the four-word reader named
+`FORGE A WEAPON · ABOUT $0.03` one of only two things that worked on them. Token amounts
+alone do not tell a newcomer whether a craft costs cents or dollars.
+The operator's call, made with that evidence in hand. It also means the Ronke-day premium
+above is now invisible to players rather than merely unremarked, which raises rather than
+lowers the value of fixing the pinned leg.
+
 **Not modelled, and worth deciding before build:** what happens when a player holds none of
 the three tokens at all. Today that is an off-site errand across two venues, and no amount
 of drawer design fixes it. A single-token or RON-denominated purchase path would, and that

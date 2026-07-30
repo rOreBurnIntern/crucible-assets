@@ -402,23 +402,28 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .qty-presets button.on{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 
 .buy-price{display:flex;align-items:baseline;gap:16px;margin-top:18px}
-.buy-usd{
+.buy-got{
   font-family:var(--disp);font-weight:800;font-size:60px;line-height:.86;
   color:var(--ember);font-variant-numeric:tabular-nums;
 }
 .buy-for{font-family:var(--mono);font-size:12.5px;line-height:1.55;color:var(--muted)}
 .buy-for b{color:var(--bone);font-weight:700}
-.buy-legs{
-  margin-top:12px;display:flex;flex-wrap:wrap;gap:8px 20px;
-  font-family:var(--mono);font-size:12px;color:var(--muted);
+
+/* the tokens are the price now, so they get a real column rather than a
+   run-on line: amount right-aligned in a fixed gutter so three different
+   magnitudes still scan as one list */
+.buy-legs{list-style:none;margin-top:10px}
+.buy-legs li{
+  display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;
+  padding:9px 0;border-bottom:1px solid rgba(244,237,225,.1);
+  font-family:var(--mono);font-size:15px;font-weight:700;
 }
-.buy-legs .leg{display:flex;align-items:baseline;gap:6px}
-.buy-legs b{color:rgba(244,237,225,.85);font-weight:700}
+.buy-legs .amt{color:var(--bone);text-align:right;min-width:88px;font-variant-numeric:tabular-nums}
 .buy-legs a{
-  color:var(--bone);text-decoration:none;
-  border-bottom:1px solid rgba(244,237,225,.35);padding-bottom:1px;
+  color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;
+  border-bottom:1px solid rgba(244,237,225,.28);padding-bottom:1px;
 }
-.buy-legs a:hover{border-color:var(--bone);color:#fff}
+.buy-legs a:hover{border-color:var(--bone);color:var(--bone)}
 .buy-get{
   margin-top:9px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--muted);
 }
@@ -710,7 +715,7 @@ body[data-state="weapon"] .only-forge{display:none}
       <span>All on</span><b class="max">&times;1.73</b>
     </div>
 
-    <button class="btn btn-primary sheet-go" data-close>Feed the Warden <small>6.9 $RONKESTR, about $0.03</small></button>
+    <button class="btn btn-primary sheet-go" data-close>Feed the Warden <small>6.9 $RONKESTR</small></button>
     <p class="sheet-fine">One offering left today. It only boosts attacks made after it lands.</p>
   </div>
 </div>
@@ -731,7 +736,7 @@ body[data-state="weapon"] .only-forge{display:none}
     <ul class="buffs">
       <li class="off">
         <span class="tag">Off</span><span class="nm">One more offering</span><span class="amt">+15%</span>
-        <p>6.9 $RONKESTR, about $0.03. Two of three used.</p>
+        <p>6.9 $RONKESTR. Two of three used.</p>
       </li>
       <li class="off">
         <span class="tag">Off</span><span class="nm">Hold 10 RON</span><span class="amt">+10%</span>
@@ -771,15 +776,19 @@ body[data-state="weapon"] .only-forge{display:none}
       </div>
     </div>
 
+    <!-- no dollar figure anywhere (operator, 2026-07-30). The tokens ARE the
+         price, so they carry the hierarchy the USD total used to. What you get
+         is denominated in attacks instead of money. -->
     <div class="buy-price">
-      <span class="buy-usd" id="buyUsd">~$0.30</span>
-      <span class="buy-for"><b id="buyN">10</b> crafts<br>about <b id="buySwings">87</b> attacks</span>
+      <span class="buy-got" id="buySwings">87</span>
+      <span class="buy-for">attacks, near enough<br>from <b id="buyN">10</b> crafts</span>
     </div>
-    <p class="buy-legs" id="buyLegs"></p>
+
+    <div class="steps-k">You pay</div>
+    <ul class="buy-legs" id="buyLegs"></ul>
     <p class="buy-get">
-      Short on any of them? Tap it to go and get more.<br>
-      Most days that third leg is about <a href="https://app.roninchain.com/swap?outputCurrency=0xa8754b9Fa15fc18BB59458815510E40a12cD2014" target="_blank" rel="noreferrer">19 SLP &#8599;</a>
-      and a craft costs about <b>$0.03</b>. Ronke days swap it for $RONKESTR, which today makes it <b>$0.05</b>.
+      Short on any of them? Tap it to go and get more.
+      Most days the third one is SLP instead of $RONKESTR.
     </p>
 
     <div class="steps-k">One-time approvals</div>
@@ -884,7 +893,7 @@ body[data-state="weapon"] .only-forge{display:none}
       <span class="st" id="stBank">Bank</span>
       <span class="chev">&rsaquo;</span>
       <span class="st" id="stChest">Chest</span>
-      <span class="price">about <b>$0.05</b> a craft today<span class="tokens">, in $BURN, rORE and $RONKESTR</span></span>
+      <span class="price">a craft costs <b>26.14</b> $BURN <span class="tokens">&middot; <b>1.73</b> rORE &middot; <b>6.9</b> $RONKESTR</span></span>
     </div>
 
     <div class="status only-weapon">
@@ -1038,35 +1047,36 @@ body[data-state="weapon"] .only-forge{display:none}
      the live LEG_TOKENS map sends $BURN to Katana, which routes through the taxed
      BURN/RON pair. burncoin.tech's own Trade $BURN runs the Zap (wBURN/USDC) and
      skips the 6.66% tax, so that is where a player should be sent. */
-  /* Live token prices from crucible-price-sync (2026-07-30): BURN $0.00038046,
-     rORE $0.005774, SLP $0.0005144, RONKESTR $0.004748. The USD total is DERIVED
-     from these rather than assumed, which is how the Ronke-day premium below
-     shows up instead of hiding behind a nominal "$0.03". */
+  /* Per-craft leg amounts, live from CrucibleForgeV2.quote() at legs v22.
+     NO dollar figure anywhere (operator, 2026-07-30): the tokens are the price.
+     ⚠️ That decision hides a real premium rather than removing it. Priced at
+     2026-07-30 rates a Ronke-day craft is ~$0.053 against ~$0.030 on an SLP day,
+     because the $RONKESTR leg is pinned at 6.9 tokens and never re-pegged while
+     $BURN and rORE are held to a cent each. See the plan, "A craft does not cost
+     $0.03 on a Ronke day". */
   var LEGS = [
-    { sym:'$BURN', per:26.142272, dp:2, usd:0.00038046,
+    { sym:'$BURN', per:26.142272, dp:2,
       url:'https://burncoin.tech/dashboard', where:'burncoin.tech, no 6.66% tax' },
-    { sym:'rORE', per:1.728455, dp:2, usd:0.005774,
+    { sym:'rORE', per:1.728455, dp:2,
       url:'https://app.roninchain.com/swap?outputCurrency=0x56418E06A569ce559b457F533A4f8D9D51a27cA8',
       where:'Katana' },
     /* the swappable leg. SLP on most days, $RONKESTR on Ronke-Warden days, set by
        the keeper with setLeg. The client never hardcodes it: production reads the
        legs from quote() on-chain, so a swap needs no deploy. */
-    { sym:'$RONKESTR', per:6.9, dp:1, usd:0.004748,
+    { sym:'$RONKESTR', per:6.9, dp:1,
       url:'https://roninstrategy.fun/strategy/0x404533a09bf281199ce6b0ef60b7eff7123ff8dc',
       where:'Ronin Strategy, 10% fee' }
   ];
-  var USD_PER_CRAFT = LEGS.reduce(function(a,l){ return a + l.per * l.usd; }, 0);
   var SWINGS_PER_CRAFT = 8.7;            // measured: players push well past the safe floor
   var buyN = 10, approved = false;
 
   function renderBuy(){
     $('buyN').textContent = buyN;
-    $('buyUsd').textContent = '~$' + (buyN * USD_PER_CRAFT).toFixed(2);
     $('buySwings').textContent = Math.round(buyN * SWINGS_PER_CRAFT);
     $('buyLegs').innerHTML = LEGS.map(function(l){
-      return '<span class="leg"><b>' + (l.per * buyN).toFixed(l.dp) + '</b> ' +
+      return '<li><span class="amt">' + (l.per * buyN).toFixed(l.dp) + '</span>' +
         '<a href="' + l.url + '" target="_blank" rel="noreferrer" title="Get ' + l.sym +
-        ' on ' + l.where + '">' + l.sym + ' &#8599;</a></span>';
+        ' on ' + l.where + '">' + l.sym + ' &#8599;</a></li>';
     }).join('');
     $('buyGo').textContent = approved ? ('Buy ' + buyN + ' crafts') : 'Approve $RONKESTR';
     $('appr').lastElementChild.className = approved ? 'done' : 'todo';
