@@ -285,3 +285,29 @@ radial mask rather than by dimming the boss back down.
 the paid offering (§7.2 item 4) is an economy question, and the post-crack explanation for
 the players who did not find it (item 9) belongs to the crack surface, not the arena.
 
+### D revision 2 (operator review, 2026-07-30)
+
+Four changes, all from the operator looking at the build.
+
+1. **The roster is gone, back to Records.** It was imported from B, it was never one of the
+   five things the arena keeps, and above the sprite it covered the Warden's face, which
+   threw away the one thing B was contributing. Cutting it fixes the face and the clutter
+   in a single move, and returns the screen to the agreed scope. The boss now has the
+   column to itself and is 568px rather than 496px.
+2. **A `How to play` pill in the rail, opening a numbered overlay.** The station line shows
+   *where you are*; it does not teach *what the order is* to someone who has never played.
+   The pill sits at the head of the line it explains. Five steps, and the sequence starts
+   with the offering because offerings are prospective: they only buff attacks that come
+   after them, so doing it first is the actual correct advice.
+   This is the one place numbers are used. The screen genuinely is a sequence here and the
+   whole point of the panel is the order, which is the exception the spec allows.
+3. **`Offer` joins the station line**, at the head, tagged optional so it reads as an
+   opening move rather than a gate. It also answers the "make offerings unmissable" brief
+   better than the panel did, because position on the line explains what it does.
+4. **`Push` is now `Attack`**, and the verb is standardised everywhere it appeared: the
+   button, the station, the run counter, the offering copy, the perk line and the ticker.
+   Escalation still reads, through the appended percentage, the meter and the risk colour.
+
+Screenshots: `shots/d-synthesis-{desktop,mobile}.png`, the forge state, and the overlay at
+both breakpoints.
+

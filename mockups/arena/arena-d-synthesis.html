@@ -164,12 +164,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .right{position:relative;z-index:2;padding-top:30px;min-height:520px}
 /* the boss sits BELOW the roster, not behind it: B's win was a Warden with a
    visible face, and a roster laid over its head throws that away twice over */
+/* with the roster gone the boss gets the column to itself, which is the whole
+   reason it was worth importing from B */
 .warden{
-  position:absolute;z-index:0;left:auto;right:-52px;top:282px;bottom:auto;
-  width:496px;height:496px;overflow:hidden;pointer-events:none;
+  position:absolute;z-index:0;left:auto;right:-30px;top:158px;bottom:auto;
+  width:568px;height:568px;overflow:hidden;pointer-events:none;
 }
 .warden img{
-  width:496px;height:496px;
+  width:568px;height:568px;
   /* the sprite carries its own near-black plate, which reads as a visible
      rectangle now that the boss is bright enough to be a presence. Crush the
      plate toward the page ink with contrast, then mask the corners out, rather
@@ -217,23 +219,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tomorrow b{color:var(--bone);font-weight:700}
 .tomorrow img{width:26px;height:26px;opacity:.9}
 
-/* roster: B's block, the most readable object anyone found in the set */
-.roster{position:relative;z-index:3;margin-top:30px;margin-left:auto;max-width:400px}
-.roster .rhead{
-  display:grid;grid-template-columns:1fr auto auto;gap:18px;
-  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--muted);padding-bottom:7px;border-bottom:1px solid rgba(244,237,225,.22);
-}
-.roster .r{
-  display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:baseline;
-  padding:9px 0;border-bottom:1px solid rgba(244,237,225,.08);
-  background:linear-gradient(90deg,transparent,rgba(16,13,11,.86) 18%);
-}
-.roster .r .n{font-size:15px;font-weight:600}
-.roster .r .v{font-family:var(--mono);font-size:14px;font-weight:600;min-width:62px;text-align:right}
-.roster .r .p{font-family:var(--mono);font-size:12.5px;color:var(--muted);min-width:52px;text-align:right}
-.roster .r.you{border-left:3px solid var(--ember);padding-left:11px;margin-left:-14px}
-.roster .r.you .n{color:var(--ember)}
+/* The roster that lived here has gone to Records. It was imported from
+   direction B, it was never one of the five things the arena keeps, and laid
+   above the sprite it covered the Warden's face, which threw away the exact
+   thing B was contributing. The standings are reference material; the boss is
+   not. */
 
 /* damage popups + impact */
 .pop{
@@ -283,6 +273,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .line .st.ready{color:var(--bone);font-weight:600}
 .line .st.ready s{text-decoration:none;border-bottom:2px solid var(--ember);padding-bottom:2px}
+/* the offering leads the sequence because it only buffs attacks that come
+   after it, but it is optional and must not read as a gate */
+.line .st.opt{color:var(--warden);opacity:.75}
+.line .st.opt::after{content:"optional";margin-left:8px;font-size:9.5px;letter-spacing:.12em;color:var(--muted)}
 /* the craft price has to survive into the armed state: that is where the
    repeat spending happens and every direction dropped it there */
 .line .price{margin-left:auto;color:var(--muted);letter-spacing:.1em;text-transform:none;font-size:12px}
@@ -351,6 +345,45 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 body[data-state="forge"] .only-weapon{display:none}
 body[data-state="weapon"] .only-forge{display:none}
 
+/* ---------- how to play ---------- */
+.howto{
+  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink);background:var(--bone);
+  padding:6px 13px;margin-right:16px;white-space:nowrap;flex:none;
+  transition:background .14s ease,transform .1s ease;
+}
+.howto:hover{background:#fff}
+.howto:active{transform:translateY(1px)}
+
+.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:24px}
+.sheet[hidden]{display:none}
+.sheet-scrim{position:absolute;inset:0;background:rgba(9,7,6,.86);animation:fade .18s ease-out}
+.sheet-panel{
+  position:relative;z-index:2;width:min(620px,100%);max-height:88dvh;overflow:auto;
+  background:var(--ink-2);border:2px solid var(--bone);box-shadow:12px 12px 0 var(--ember);
+  padding:26px 30px 28px;animation:rise .22s cubic-bezier(.16,1,.3,1);
+}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.sheet-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+  border-bottom:3px solid var(--bone);padding-bottom:11px}
+.sheet-head h2{font-family:var(--disp);font-weight:800;font-size:44px;line-height:.84;text-transform:uppercase}
+.sheet-x{font-size:30px;line-height:1;color:var(--muted);padding:0 4px}
+.sheet-x:hover{color:var(--bone)}
+.steps{list-style:none;counter-reset:s;margin-top:6px}
+.steps li{counter-increment:s;padding:16px 0 15px 46px;position:relative;border-bottom:1px solid rgba(244,237,225,.1)}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:15px;
+  font-family:var(--disp);font-weight:800;font-size:30px;line-height:1;color:var(--ember);
+}
+.steps li b{font-size:17px;font-weight:700}
+.steps li p{margin-top:6px;font-size:14px;line-height:1.55;color:var(--muted)}
+.opttag{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--warden);margin-left:9px;
+}
+.sheet-go{margin-top:22px;width:100%;font-size:26px;height:56px}
+
 .dev{
   position:fixed;left:8px;bottom:calc(var(--rail-h) + 10px);z-index:40;
   font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
@@ -375,10 +408,8 @@ body[data-state="weapon"] .only-forge{display:none}
   .ticker li{padding:4px 0}
   .right{padding-top:16px;min-height:0}
   .wardenhead h2{font-size:42px}
-  .roster{margin-top:20px}
-  .roster .r{padding:7px 0}
-  .warden{top:250px}
-  .warden img{width:470px;height:470px}
+  .warden{top:132px;width:452px;height:452px}
+  .warden img{width:452px;height:452px}
 }
 
 /* ---------- mobile ---------- */
@@ -398,17 +429,24 @@ body[data-state="weapon"] .only-forge{display:none}
   .right{display:contents}
   .wardenhead{order:-2;text-align:left;padding-top:14px;position:relative;z-index:3}
   .col{order:-1}
-  .tomorrow{order:1;margin-left:0;margin-top:24px;font-size:11px;padding-top:9px}
-  .roster{order:2}
+  .tomorrow{order:1;margin-left:0;margin-top:22px;font-size:11px;padding-top:9px}
   .wardenhead h2{font-size:30px;max-width:62%}
   .wardenhead p{font-size:12.5px;max-width:64%;margin-left:0;margin-top:8px}
   .tomorrow img{width:22px;height:22px}
-  .warden{left:auto;right:-46px;top:52px;bottom:auto;width:212px;height:212px}
-  .warden img{width:212px;height:212px}
-  .roster{margin-top:18px;max-width:none}
-  .roster .r{background:none}
-  .roster .r .n{font-size:14px}
+  .warden{left:auto;right:-46px;top:52px;bottom:auto;width:222px;height:222px}
+  .warden img{width:222px;height:222px}
   .line .tokens{display:none}
+  .howto{margin-right:10px;font-size:11px;padding:6px 11px}
+  .sheet{padding:10px}
+  .sheet-panel{padding:16px 15px 18px;max-height:94dvh;box-shadow:8px 8px 0 var(--ember)}
+  .sheet-head{padding-bottom:8px}
+  .sheet-head h2{font-size:30px}
+  .steps li{padding:11px 0 10px 32px}
+  .steps li::before{font-size:22px;top:10px}
+  .steps li b{font-size:15px}
+  .steps li p{font-size:12.5px;line-height:1.5;margin-top:4px}
+  .opttag{display:block;margin-left:0;margin-top:3px}
+  .sheet-go{font-size:21px;height:46px;margin-top:14px}
 
   .kicker{margin-top:22px;font-size:11px;letter-spacing:.22em}
   .pot{font-size:88px;margin-top:8px}
@@ -461,6 +499,45 @@ body[data-state="weapon"] .only-forge{display:none}
 
 <button class="dev" id="dev" aria-label="Toggle mock state">state</button>
 
+<!-- How to play. Numbers are used here, and only here: this genuinely is a
+     sequence and the whole point of the panel is the order. -->
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-scrim" data-close></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-head">
+      <h2 id="sheet-title">How to play</h2>
+      <button class="sheet-x" data-close aria-label="Close">&times;</button>
+    </div>
+    <ol class="steps">
+      <li>
+        <b>Feed the Warden</b> <span class="opttag">optional, do it first</span>
+        <p>Send $RONKESTR before you attack. Every attack after it hits 15% harder,
+          up to three offerings a day. It does nothing to attacks you have already made.</p>
+      </li>
+      <li>
+        <b>Forge a weapon</b>
+        <p>About $0.03, paid in $BURN, rORE and $RONKESTR. Rarer weapons roll bigger dice,
+          so they hit harder.</p>
+      </li>
+      <li>
+        <b>Attack the Warden</b>
+        <p>Your first five attacks are always safe. Each one adds damage to the weapon.</p>
+      </li>
+      <li>
+        <b>Bank it, or keep attacking</b>
+        <p>After the fifth, every attack can shatter the weapon and cost you all the damage
+          it is holding. Banking makes that damage permanent and ends the run.</p>
+      </li>
+      <li>
+        <b>Banked damage is your share</b>
+        <p>When anyone cracks the chest it splits by banked damage. Crack it yourself and
+          take 20% off the top first. Any attack can be the one, about 1 in 3,000.</p>
+      </li>
+    </ol>
+    <button class="btn btn-primary sheet-go" data-close>Got it</button>
+  </div>
+</div>
+
 <div id="shake">
   <header class="topbar wrap">
     <span class="mark">Crucible</span>
@@ -482,8 +559,8 @@ body[data-state="weapon"] .only-forge{display:none}
       </div>
 
       <p class="record">
-        <b>7 cracks</b> so far &middot; <b>$23.17</b> paid out &middot; biggest <b>$7.89</b><br>
-        This one holds <span class="rk">152 $RONKESTR</span> ($0.72) alongside the cash.
+        <b>7 cracks</b> so far &middot; <b>$23.17</b> paid out &middot; biggest <b>$7.89</b>
+        &middot; this one holds <span class="rk">152 $RONKESTR</span>
       </p>
 
       <div class="stampwrap">
@@ -500,11 +577,11 @@ body[data-state="weapon"] .only-forge{display:none}
         </div>
       </div>
 
-      <p class="odds"><strong>Your staked damage is your share.</strong> Any swing can crack it open. About <b>1&nbsp;in&nbsp;3,000</b>.</p>
+      <p class="odds">Any attack can crack it open. About <b>1&nbsp;in&nbsp;3,000</b>.</p>
 
       <ul class="ticker">
         <li><span>Puck staked 38</span><time>2m ago</time></li>
-        <li><span>JohnnyCola pushed a Rare and shattered</span><time>3m ago</time></li>
+        <li><span>JohnnyCola shattered a Rare</span><time>3m ago</time></li>
         <li><span>xInes007 forged a Common</span><time>6m ago</time></li>
       </ul>
     </div>
@@ -516,21 +593,13 @@ body[data-state="weapon"] .only-forge{display:none}
 
       <div class="wardenhead">
         <h2>Ronke Warden</h2>
-        <p>Everyone swings and everyone can crack it. <b>Ronkeverse holders hit 15% harder.</b></p>
+        <p>Anyone can attack and anyone can crack it. <b>Ronkeverse holders hit 15% harder.</b></p>
       </div>
 
       <span class="tomorrow">
         <img src="assets/wardens/beast.png" alt="">
         Tomorrow <b>Beast Warden</b> &middot; Axie beast, bug and mech
       </span>
-
-      <div class="roster">
-        <div class="rhead"><span>Standing</span><span>Staked</span><span>Share</span></div>
-        <div class="r"><span class="n">Puck</span><span class="v">2,042</span><span class="p">45.1%</span></div>
-        <div class="r"><span class="n">JohnnyCola</span><span class="v">1,545</span><span class="p">34.1%</span></div>
-        <div class="r you"><span class="n">skmd</span><span class="v" id="rosterYou">926</span><span class="p" id="rosterYouPct">20.4%</span></div>
-        <div class="r"><span class="n">xInes007</span><span class="v">16</span><span class="p">0.4%</span></div>
-      </div>
     </div>
 
   </main>
@@ -540,8 +609,10 @@ body[data-state="weapon"] .only-forge{display:none}
   <div class="wrap">
 
     <div class="line" id="line">
+      <button class="howto" id="howto">How to play</button>
+      <span class="st opt" id="stOffer">Offer</span>
       <span class="st" id="stForge">Forge</span>
-      <span class="st" id="stStrike">Strike</span>
+      <span class="st" id="stStrike">Attack</span>
       <span class="st" id="stBank">Bank</span>
       <span class="st" id="stChest">Chest</span>
       <span class="price">about <b>$0.03</b> a craft<span class="tokens">, in $BURN, rORE and $RONKESTR</span></span>
@@ -549,7 +620,7 @@ body[data-state="weapon"] .only-forge{display:none}
 
     <div class="status only-weapon">
       <span class="s tier"><b>Rare</b> 1d6</span>
-      <span class="s">swing <b id="swingNo">7</b></span>
+      <span class="s">attack <b id="swingNo">7</b></span>
       <span class="s safe">banked <b id="runBanked">18</b></span>
       <span class="s risked">at risk <b id="runRisk">24</b></span>
       <span class="s">shatter <b class="shatterval" id="shatterPct">30%</b><span class="meter" id="meter"></span></span>
@@ -570,13 +641,13 @@ body[data-state="weapon"] .only-forge{display:none}
         <dl class="only-forge"><dt>No weapon</dt><dd>2 crafts paid</dd></dl>
       </div>
 
-      <button class="btn btn-primary only-weapon" id="push">Push <small id="pushPct">&middot; 30%</small></button>
+      <button class="btn btn-primary only-weapon" id="push">Attack <small id="pushPct">&middot; 30%</small></button>
       <button class="btn btn-ghost only-weapon" id="bank">Bank <small id="bankAmt">24</small></button>
 
       <button class="btn btn-primary only-forge" id="forge">Forge a weapon</button>
 
       <div class="offering">
-        <p>Feed the Warden <em>6.9&nbsp;$RONKESTR, about&nbsp;$0.03</em>. Every swing hits <b>15% harder</b>. Up to <b>3 today</b>.</p>
+        <p>Feed the Warden <em>6.9&nbsp;$RONKESTR, about&nbsp;$0.03</em>. Every attack hits <b>15% harder</b>. Up to <b>3 today</b>.</p>
         <button class="btn-offer">Offer</button>
       </div>
     </div>
@@ -605,9 +676,17 @@ body[data-state="weapon"] .only-forge{display:none}
     $('stBank').className   = 'st' + (!forging && st.risk > 0 ? ' ready' : '');
     $('stChest').className  = 'st';
     $('stForge').innerHTML  = forging ? '<em></em>Forge' : 'Forge';
-    $('stStrike').innerHTML = forging ? 'Strike' : '<em></em>Strike';
+    $('stStrike').innerHTML = forging ? 'Attack' : '<em></em>Attack';
     $('stBank').innerHTML   = (!forging && st.risk > 0) ? '<s>Bank</s>' : 'Bank';
   }
+
+  /* ---- how to play ---- */
+  var sheet = $('sheet');
+  function openSheet(){ sheet.hidden = false; sheet.querySelector('.sheet-x').focus(); }
+  function closeSheet(){ sheet.hidden = true; $('howto').focus(); }
+  $('howto').addEventListener('click', openSheet);
+  sheet.addEventListener('click', function(e){ if (e.target.closest('[data-close]')) closeSheet(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !sheet.hidden) closeSheet(); });
 
   function renderRisk(){
     var pct = Math.round(st.shatter*100);
@@ -633,8 +712,6 @@ body[data-state="weapon"] .only-forge{display:none}
     $('crackUsd').textContent = '$' + (POT * FINDER + base).toFixed(2);
     $('sharePct').textContent = (pct*100).toFixed(1) + '%';
     $('stakeTotal').textContent = st.staked.toLocaleString('en-US');
-    $('rosterYou').textContent = st.staked.toLocaleString('en-US');
-    $('rosterYouPct').textContent = (pct*100).toFixed(1) + '%';
     if (bump && !reduce){
       var el = $('shareUsd');
       el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
