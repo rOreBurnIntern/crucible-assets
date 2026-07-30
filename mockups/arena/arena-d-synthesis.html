@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crucible arena - direction D, the synthesis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   DIRECTION D - the synthesis.
+   A's spine (pot as meter, stake stamped under it, action rail pinned to the
+   bottom) + C's station strip carried INSIDE that rail as a thin line rather
+   than four bordered columns + B's boss scale and roster block. Deliberately
+   NOT from B: the partner-colour page takeover. The Warden is a costume on the
+   machine, not the machine.
+   Every red-team finding that survived the refute pass is applied here.
+   ========================================================================== */
+:root{
+  --ink:#100d0b;
+  --ink-2:#161110;
+  --bone:#f4ede1;
+  --muted:#9a8d7d;
+  --ember:#ff5a12;
+  --warden:#27B9FC;
+
+  --disp:'Big Shoulders Display',system-ui,sans-serif;
+  --body:'Sora',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+
+  --rail-h:150px;
+  --pad:44px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0}
+html,body{background:var(--ink);color:var(--bone)}
+body{font-family:var(--body);-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden}
+img{display:block;image-rendering:pixelated}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--ember);outline-offset:3px}
+
+#shake{will-change:transform;position:relative;min-height:100dvh}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--pad)}
+
+/* ---------- top ---------- */
+.topbar{
+  display:flex;align-items:baseline;gap:22px;
+  padding-top:22px;padding-bottom:13px;
+  border-bottom:1px solid rgba(244,237,225,.14);
+}
+.mark{font-family:var(--disp);font-weight:800;font-size:24px;letter-spacing:.02em;line-height:.84;text-transform:uppercase}
+.daymark{
+  margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  display:flex;gap:10px;align-items:center;
+}
+.daymark b{color:var(--bone);font-weight:700}
+.daymark i{width:1px;height:11px;background:rgba(244,237,225,.24);display:block;font-style:normal}
+/* the Records link carries a payload instead of being a bare noun: it is the
+   only trust affordance the arena keeps, and it has to say what it opens */
+.records{
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;white-space:nowrap;
+  border-bottom:1px solid rgba(244,237,225,.3);padding-bottom:2px;
+}
+.records b{color:var(--bone);font-weight:700}
+.records:hover{color:var(--bone);border-color:var(--bone)}
+
+/* ---------- stage ---------- */
+.stage{
+  position:relative;padding-bottom:calc(var(--rail-h) + 24px);
+  display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);
+  column-gap:44px;align-items:start;
+}
+.col{position:relative;z-index:2}
+
+/* ---------- the pot: a meter, not a billboard ---------- */
+.kicker{
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--muted);margin-top:30px;
+}
+.pot{
+  font-family:var(--disp);font-weight:800;font-size:clamp(84px,9.9vw,146px);
+  line-height:.8;letter-spacing:-.022em;color:var(--ember);
+  margin-top:14px;font-variant-numeric:tabular-nums;display:block;
+}
+/* the fill line keeps the "it grows" meaning. The count-up animation is
+   deliberately gone: a giant animated money figure is on our own list of
+   things that read as a scam. */
+.fill{position:relative;margin-top:24px;height:24px;width:min(560px,100%)}
+.fill .track{
+  position:absolute;left:0;right:0;top:10px;height:2px;
+  background:repeating-linear-gradient(to right,rgba(244,237,225,.28) 0 6px,transparent 6px 12px);
+}
+.fill .ticks{
+  position:absolute;left:0;right:0;top:5px;height:12px;
+  background:repeating-linear-gradient(to right,rgba(244,237,225,.16) 0 1px,transparent 1px 10%);
+}
+.fill .bar{position:absolute;left:0;top:7px;height:8px;width:78%;display:flex;overflow:hidden}
+.fill .seg-usdc{background:var(--ember);flex:63.3 0 0}
+.fill .seg-rk{background:var(--warden);flex:14.7 0 0}
+.fill .head{position:absolute;top:0;height:24px;width:3px;background:var(--bone);left:78%;transform:translateX(-1px)}
+.fill.go .bar{animation:grow 1s cubic-bezier(.16,1,.3,1)}
+.fill.go .head{animation:growhead 1s cubic-bezier(.16,1,.3,1)}
+@keyframes grow{from{width:0}to{width:78%}}
+@keyframes growhead{from{left:0}to{left:78%}}
+
+/* the record, not a single prior draw: the ceiling persona's only hold, and
+   the trust instrument the front-door red team ranked highest */
+.record{
+  margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--muted);
+  letter-spacing:.02em;line-height:1.6;
+}
+.record b{color:var(--bone);font-weight:600}
+.record .rk{color:var(--warden);font-weight:600}
+
+/* ---------- your stake ---------- */
+.stampwrap{margin-top:26px}
+.stamp{
+  position:relative;transform:rotate(-1.4deg);
+  border:2px solid var(--bone);background:var(--ink-2);
+  box-shadow:8px 8px 0 var(--ember);
+  padding:13px 24px 12px;width:fit-content;min-width:408px;display:inline-block;
+}
+.stamp::before{
+  content:"";position:absolute;left:0;right:0;top:-2px;height:5px;
+  background:repeating-linear-gradient(to right,var(--bone) 0 7px,transparent 7px 14px);
+}
+/* "Your stake" not "banked": banked is the run pile in the rail, and the two
+   were the same word 90px apart in every direction we tested */
+.stamp .who{
+  display:flex;align-items:baseline;gap:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--muted);
+}
+.stamp .who b{color:var(--bone);font-weight:700;letter-spacing:.16em}
+.stamp .row1{display:flex;align-items:baseline;gap:16px;margin-top:7px}
+.share{font-family:var(--disp);font-weight:800;font-size:52px;line-height:.84;letter-spacing:-.015em;color:var(--bone)}
+.share-sub{font-family:var(--mono);font-size:12.5px;line-height:1.5;color:var(--muted)}
+.share-sub b{color:var(--bone);font-weight:600}
+.stamp .row2{
+  margin-top:11px;padding-top:10px;border-top:1px solid rgba(244,237,225,.2);
+  font-family:var(--mono);font-size:13px;color:var(--bone);
+}
+.stamp .row2 em{font-style:normal;color:var(--ember);font-weight:700}
+.share.bump{animation:bump .38s cubic-bezier(.16,1,.3,1)}
+@keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.13)}100%{transform:scale(1)}}
+
+.odds{margin-top:22px;font-size:15px;line-height:1.55;color:var(--muted)}
+.odds strong{color:var(--bone);font-weight:600}
+.odds b{color:var(--bone);font-weight:600}
+
+.ticker{margin-top:18px;list-style:none;max-width:460px}
+.ticker li{
+  display:flex;gap:14px;align-items:baseline;padding:6px 0;
+  border-bottom:1px solid rgba(244,237,225,.08);
+  font-family:var(--mono);font-size:12px;color:var(--muted);
+}
+.ticker li span{color:rgba(244,237,225,.72)}
+.ticker li time{margin-left:auto;font-size:11px;letter-spacing:.06em;opacity:.7}
+
+/* ---------- right: the Warden, at B's scale, without B's takeover ---------- */
+.right{position:relative;z-index:2;padding-top:30px;min-height:520px}
+/* the boss sits BELOW the roster, not behind it: B's win was a Warden with a
+   visible face, and a roster laid over its head throws that away twice over */
+.warden{
+  position:absolute;z-index:0;left:auto;right:-52px;top:282px;bottom:auto;
+  width:496px;height:496px;overflow:hidden;pointer-events:none;
+}
+.warden img{
+  width:496px;height:496px;
+  /* the sprite carries its own near-black plate, which reads as a visible
+     rectangle now that the boss is bright enough to be a presence. Crush the
+     plate toward the page ink with contrast, then mask the corners out, rather
+     than dimming the whole boss back down the way direction A did. */
+  filter:brightness(.94) contrast(1.2) saturate(1.02);
+  -webkit-mask-image:radial-gradient(112% 104% at 52% 47%,#000 46%,transparent 84%);
+  mask-image:radial-gradient(112% 104% at 52% 47%,#000 46%,transparent 84%);
+}
+/* falloff on the open edges so the boss dissolves into the page rather than
+   sitting in a box. No blue field: the page does not repaint for a partner. */
+.warden::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,var(--ink) 0,rgba(16,13,11,.78) 12%,transparent 46%),
+    linear-gradient(180deg,var(--ink) 0,rgba(16,13,11,.72) 9%,transparent 26%),
+    linear-gradient(0deg,var(--ink) 0,rgba(16,13,11,.45) 8%,transparent 22%);
+}
+.warden.hit img{animation:flinch .34s steps(4,end)}
+@keyframes flinch{
+  0%{transform:translate(0,0);filter:brightness(3.4) saturate(0)}
+  30%{transform:translate(26px,-7px);filter:brightness(1.6)}
+  60%{transform:translate(-9px,4px);filter:brightness(.88) contrast(.97) saturate(.95)}
+  100%{transform:translate(0,0);filter:brightness(.88) contrast(.97) saturate(.95)}
+}
+
+.wardenhead{position:relative;z-index:3;text-align:right}
+.wardenhead h2{
+  font-family:var(--disp);font-weight:800;font-size:clamp(38px,4.4vw,60px);
+  line-height:.84;text-transform:uppercase;letter-spacing:.005em;color:var(--warden);
+}
+/* the perk gets its missing counterpart. Stating an advantage with no baseline
+   reads as a gate to everyone who does not hold the NFT. */
+.wardenhead p{
+  margin-top:10px;font-size:14px;line-height:1.5;color:rgba(244,237,225,.9);
+  max-width:34ch;margin-left:auto;
+}
+.wardenhead p b{color:var(--warden);font-weight:700}
+/* nothing anywhere told a visiting community that its own day was coming */
+.tomorrow{
+  position:relative;z-index:3;width:fit-content;margin-left:auto;
+  margin-top:12px;display:flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);border-top:1px solid rgba(244,237,225,.2);padding-top:9px;
+}
+.tomorrow b{color:var(--bone);font-weight:700}
+.tomorrow img{width:26px;height:26px;opacity:.9}
+
+/* roster: B's block, the most readable object anyone found in the set */
+.roster{position:relative;z-index:3;margin-top:30px;margin-left:auto;max-width:400px}
+.roster .rhead{
+  display:grid;grid-template-columns:1fr auto auto;gap:18px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);padding-bottom:7px;border-bottom:1px solid rgba(244,237,225,.22);
+}
+.roster .r{
+  display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:baseline;
+  padding:9px 0;border-bottom:1px solid rgba(244,237,225,.08);
+  background:linear-gradient(90deg,transparent,rgba(16,13,11,.86) 18%);
+}
+.roster .r .n{font-size:15px;font-weight:600}
+.roster .r .v{font-family:var(--mono);font-size:14px;font-weight:600;min-width:62px;text-align:right}
+.roster .r .p{font-family:var(--mono);font-size:12.5px;color:var(--muted);min-width:52px;text-align:right}
+.roster .r.you{border-left:3px solid var(--ember);padding-left:11px;margin-left:-14px}
+.roster .r.you .n{color:var(--ember)}
+
+/* damage popups + impact */
+.pop{
+  position:absolute;z-index:6;pointer-events:none;
+  font-family:var(--mono);font-weight:700;font-size:40px;color:var(--ember);
+  text-shadow:3px 3px 0 var(--ink);
+  animation:pop 1s cubic-bezier(.16,1,.3,1) forwards;
+}
+.pop.miss{color:var(--bone);font-size:26px}
+@keyframes pop{
+  0%{transform:translate(0,10px) scale(.7);opacity:0}
+  18%{transform:translate(0,0) scale(1.16);opacity:1}
+  100%{transform:translate(0,-104px) scale(1);opacity:0}
+}
+@keyframes shake{
+  0%{transform:translate(0,0)}20%{transform:translate(-7px,4px)}
+  40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,-2px)}
+  80%{transform:translate(3px,2px)}100%{transform:translate(0,0)}
+}
+#shake.shaking{animation:shake .26s ease-out}
+
+/* ---------- the rail: A's pinned spine, carrying C's station strip ---------- */
+.rail{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  background:var(--ink-2);border-top:1px solid rgba(244,237,225,.22);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.rail .wrap{padding-top:0;padding-bottom:14px}
+
+/* C's rail as a line, not four boxes. Current station is the BRIGHTEST thing
+   on it: in C the live step was orange and the steps ahead were white, so the
+   steps you could not reach shouted loudest. */
+.line{
+  display:flex;align-items:center;gap:0;
+  padding:9px 0 10px;border-bottom:1px solid rgba(244,237,225,.12);
+  font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+}
+.line .st{display:flex;align-items:center;gap:11px;color:rgba(244,237,225,.34)}
+.line .st + .st{margin-left:11px}
+.line .st::before{content:"";width:22px;height:1px;background:rgba(244,237,225,.24);display:block}
+.line .st:first-child::before{display:none}
+.line .st.done{color:rgba(244,237,225,.5)}
+.line .st.live{color:var(--bone);font-weight:700}
+.line .st.live em{
+  font-style:normal;display:inline-block;width:7px;height:7px;background:var(--ember);
+  margin-right:2px;
+}
+.line .st.ready{color:var(--bone);font-weight:600}
+.line .st.ready s{text-decoration:none;border-bottom:2px solid var(--ember);padding-bottom:2px}
+/* the craft price has to survive into the armed state: that is where the
+   repeat spending happens and every direction dropped it there */
+.line .price{margin-left:auto;color:var(--muted);letter-spacing:.1em;text-transform:none;font-size:12px}
+.line .price b{color:rgba(244,237,225,.8);font-weight:600}
+
+.status{
+  display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-top:11px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--muted);
+}
+.status .s{padding:0 15px;display:flex;align-items:baseline;gap:7px;border-left:1px solid rgba(244,237,225,.16)}
+.status .s:first-child{padding-left:0;border-left:0}
+.status .s b{color:var(--bone);font-weight:700;letter-spacing:.02em}
+.status .s.tier b{color:var(--warden)}
+/* banked vs at-risk cannot be told apart by hue alone: it is money state at
+   ~10px, and it failed for the colour-blind reviewer in every direction */
+.status .s.safe b{border-bottom:2px solid rgba(244,237,225,.55);padding-bottom:1px}
+.status .s.risked b{color:var(--ember);border-bottom:2px dashed var(--ember);padding-bottom:1px}
+.status .s.risked::after{content:"at risk";position:absolute;left:-9999px}
+
+.meter{display:flex;gap:3px;margin-left:4px}
+.meter i{width:7px;height:12px;background:rgba(244,237,225,.16);display:block}
+.meter i.on{background:var(--ember)}
+.meter.hot i.on{box-shadow:0 0 0 1px rgba(255,90,18,.4)}
+.shatterval{font-variant-numeric:tabular-nums;transition:letter-spacing .25s ease,color .25s ease}
+
+.controls{display:flex;align-items:stretch;gap:18px;margin-top:11px}
+.weapon{display:flex;align-items:center;gap:12px;padding-right:18px;border-right:1px solid rgba(244,237,225,.16)}
+.weapon img{height:58px;width:29px;object-fit:contain}
+.weapon .slot{height:58px;width:29px;border:1px dashed rgba(244,237,225,.3)}
+.weapon dl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.weapon dt{color:var(--bone);font-weight:700;font-size:12px;letter-spacing:.1em}
+.weapon dd{margin-top:4px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--disp);font-weight:800;text-transform:uppercase;
+  font-size:30px;line-height:1;letter-spacing:.012em;
+  padding:0 34px;height:60px;white-space:nowrap;
+  transition:transform .1s ease,box-shadow .1s ease,background .15s ease;
+}
+.btn-primary{background:var(--ember);color:var(--ink);box-shadow:6px 6px 0 var(--bone)}
+.btn-primary:hover{background:#ff6d2c}
+.btn-primary:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--bone)}
+.btn-ghost{border:2px solid var(--bone);color:var(--bone);box-shadow:5px 5px 0 rgba(244,237,225,.24)}
+.btn-ghost:hover{background:rgba(244,237,225,.09)}
+.btn-ghost:active{transform:translate(3px,3px);box-shadow:2px 2px 0 rgba(244,237,225,.24)}
+.btn small{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.04em;opacity:.85}
+
+/* the offering is priced in dollars like everything else. Leaving it in raw
+   tokens, two inches under a pot we happily price, read as deliberate. */
+.offering{
+  margin-left:auto;display:flex;align-items:center;gap:16px;
+  border-left:3px solid var(--warden);padding:6px 0 6px 16px;max-width:474px;
+}
+.offering p{font-size:13.5px;line-height:1.45;color:rgba(244,237,225,.9)}
+.offering p b{color:var(--bone);font-weight:700}
+.offering p em{font-style:normal;color:var(--warden);font-family:var(--mono);font-size:12px}
+.btn-offer{
+  border:1px solid var(--bone);color:var(--bone);padding:9px 15px;white-space:nowrap;
+  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  transition:background .15s ease,color .15s ease;
+}
+.btn-offer:hover{background:var(--bone);color:var(--ink)}
+
+body[data-state="forge"] .only-weapon{display:none}
+body[data-state="weapon"] .only-forge{display:none}
+
+.dev{
+  position:fixed;left:8px;bottom:calc(var(--rail-h) + 10px);z-index:40;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(244,237,225,.35);border:1px solid rgba(244,237,225,.16);
+  padding:4px 8px;background:rgba(16,13,11,.8);
+}
+.dev:hover{color:var(--bone)}
+
+/* short desktop viewports and the real 165px sidebar case */
+@media (min-width:821px) and (max-height:820px){
+  .kicker{margin-top:16px}
+  .pot{font-size:min(8.4vw,112px);margin-top:10px}
+  .fill{margin-top:16px}
+  .record{margin-top:11px}
+  .stampwrap{margin-top:16px}
+  .stamp{padding:11px 20px 10px}
+  .stamp .row1{margin-top:6px}
+  .stamp .row2{margin-top:9px;padding-top:8px}
+  .share{font-size:42px}
+  .odds{margin-top:15px}
+  .ticker{margin-top:12px}
+  .ticker li{padding:4px 0}
+  .right{padding-top:16px;min-height:0}
+  .wardenhead h2{font-size:42px}
+  .roster{margin-top:20px}
+  .roster .r{padding:7px 0}
+  .warden{top:250px}
+  .warden img{width:470px;height:470px}
+}
+
+/* ---------- mobile ---------- */
+@media (max-width:820px){
+  :root{--pad:18px;--rail-h:210px}
+  .topbar{padding-top:14px;padding-bottom:10px;gap:10px;flex-wrap:wrap}
+  .mark{font-size:18px}
+  .daymark{font-size:11px;gap:7px}
+  .records{font-size:10.5px;letter-spacing:.06em}
+
+  .stage{display:flex;flex-direction:column;column-gap:0}
+
+  /* the Warden leads on mobile because it is the only object that says "game"
+     in the first second. But the roster and the rotation line drop BELOW the
+     money: laid over the sprite they were unreadable, which is the exact way
+     direction B failed its colour-blind review. */
+  .right{display:contents}
+  .wardenhead{order:-2;text-align:left;padding-top:14px;position:relative;z-index:3}
+  .col{order:-1}
+  .tomorrow{order:1;margin-left:0;margin-top:24px;font-size:11px;padding-top:9px}
+  .roster{order:2}
+  .wardenhead h2{font-size:30px;max-width:62%}
+  .wardenhead p{font-size:12.5px;max-width:64%;margin-left:0;margin-top:8px}
+  .tomorrow img{width:22px;height:22px}
+  .warden{left:auto;right:-46px;top:52px;bottom:auto;width:212px;height:212px}
+  .warden img{width:212px;height:212px}
+  .roster{margin-top:18px;max-width:none}
+  .roster .r{background:none}
+  .roster .r .n{font-size:14px}
+  .line .tokens{display:none}
+
+  .kicker{margin-top:22px;font-size:11px;letter-spacing:.22em}
+  .pot{font-size:88px;margin-top:8px}
+  .fill{height:20px;margin-top:14px;width:100%}
+  .fill .track{top:8px}
+  .fill .ticks{top:4px;height:10px}
+  .fill .bar{top:6px;height:7px}
+  .fill .head{height:20px}
+  .record{margin-top:12px;font-size:11.5px}
+
+  .stampwrap{margin-top:20px}
+  .stamp{min-width:0;width:100%;transform:rotate(-.9deg);padding:12px 15px 11px;box-shadow:6px 6px 0 var(--ember)}
+  .share{font-size:44px}
+  .stamp .row2{font-size:12.5px}
+
+  .odds{margin-top:18px;font-size:13px;max-width:none}
+  .ticker{margin-top:14px;max-width:none}
+  .ticker li{font-size:11px;padding:6px 0;gap:8px}
+  .ticker li time{font-size:10px}
+
+  .rail .wrap{padding-bottom:12px}
+  .line{font-size:10.5px;letter-spacing:.11em;padding:8px 0 9px;flex-wrap:wrap;row-gap:6px}
+  .line .st{gap:7px}
+  .line .st + .st{margin-left:7px}
+  .line .st::before{width:12px}
+  .line .price{width:100%;margin-left:0;font-size:11px}
+  .status{margin-top:9px;display:flex;flex-wrap:wrap;column-gap:15px;row-gap:6px;font-size:11px;letter-spacing:.03em}
+  .status .s{padding:0;border-left:0;gap:5px}
+  .meter i{width:5px;height:10px}
+  .controls{display:grid;grid-template-columns:auto 1fr auto;gap:10px;margin-top:10px}
+  .weapon{padding-right:10px;gap:8px}
+  .weapon img,.weapon .slot{height:44px;width:22px}
+  .weapon dl{display:none}
+  .btn{font-size:23px;height:50px;padding:0 16px}
+  .btn-primary{box-shadow:5px 5px 0 var(--bone)}
+  .btn-ghost{box-shadow:4px 4px 0 rgba(244,237,225,.24)}
+  .btn small{font-size:11px}
+  .offering{grid-column:1 / -1;margin-left:0;max-width:none;order:-1;padding:5px 0 5px 11px;gap:10px}
+  .offering p{font-size:11.5px;line-height:1.35}
+  .btn-offer{padding:7px 10px;font-size:10px;letter-spacing:.09em}
+  .pop{font-size:30px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body data-state="weapon">
+
+<button class="dev" id="dev" aria-label="Toggle mock state">state</button>
+
+<div id="shake">
+  <header class="topbar wrap">
+    <span class="mark">Crucible</span>
+    <span class="daymark"><span>Day <b>29</b></span><i></i><span>S3 <b>13d 16h</b></span></span>
+    <a class="records" href="#">Records <b>&middot; every chest paid</b></a>
+  </header>
+
+  <main class="stage wrap">
+
+    <div class="col">
+      <p class="kicker">In the chest</p>
+      <span class="pot">$3.82</span>
+
+      <div class="fill" id="fill">
+        <div class="ticks"></div>
+        <div class="track"></div>
+        <div class="bar"><span class="seg-usdc"></span><span class="seg-rk"></span></div>
+        <div class="head"></div>
+      </div>
+
+      <p class="record">
+        <b>7 cracks</b> so far &middot; <b>$23.17</b> paid out &middot; biggest <b>$7.89</b><br>
+        This one holds <span class="rk">152 $RONKESTR</span> ($0.72) alongside the cash.
+      </p>
+
+      <div class="stampwrap">
+        <div class="stamp">
+          <p class="who"><b>skmd</b><span>your stake</span></p>
+          <div class="row1">
+            <span class="share" id="shareUsd">$0.62</span>
+            <span class="share-sub">
+              <b id="stakeTotal">926</b> damage staked<br>
+              <b id="sharePct">20.4%</b> of the chest
+            </span>
+          </div>
+          <p class="row2"><em id="crackUsd">$1.39</em> if you crack it yourself</p>
+        </div>
+      </div>
+
+      <p class="odds"><strong>Your staked damage is your share.</strong> Any swing can crack it open. About <b>1&nbsp;in&nbsp;3,000</b>.</p>
+
+      <ul class="ticker">
+        <li><span>Puck staked 38</span><time>2m ago</time></li>
+        <li><span>JohnnyCola pushed a Rare and shattered</span><time>3m ago</time></li>
+        <li><span>xInes007 forged a Common</span><time>6m ago</time></li>
+      </ul>
+    </div>
+
+    <div class="right">
+      <div class="warden" id="warden">
+        <img src="assets/wardens/ronke.png" alt="The Ronke Warden, today's boss" width="640" height="640">
+      </div>
+
+      <div class="wardenhead">
+        <h2>Ronke Warden</h2>
+        <p>Everyone swings and everyone can crack it. <b>Ronkeverse holders hit 15% harder.</b></p>
+      </div>
+
+      <span class="tomorrow">
+        <img src="assets/wardens/beast.png" alt="">
+        Tomorrow <b>Beast Warden</b> &middot; Axie beast, bug and mech
+      </span>
+
+      <div class="roster">
+        <div class="rhead"><span>Standing</span><span>Staked</span><span>Share</span></div>
+        <div class="r"><span class="n">Puck</span><span class="v">2,042</span><span class="p">45.1%</span></div>
+        <div class="r"><span class="n">JohnnyCola</span><span class="v">1,545</span><span class="p">34.1%</span></div>
+        <div class="r you"><span class="n">skmd</span><span class="v" id="rosterYou">926</span><span class="p" id="rosterYouPct">20.4%</span></div>
+        <div class="r"><span class="n">xInes007</span><span class="v">16</span><span class="p">0.4%</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="rail" id="rail">
+  <div class="wrap">
+
+    <div class="line" id="line">
+      <span class="st" id="stForge">Forge</span>
+      <span class="st" id="stStrike">Strike</span>
+      <span class="st" id="stBank">Bank</span>
+      <span class="st" id="stChest">Chest</span>
+      <span class="price">about <b>$0.03</b> a craft<span class="tokens">, in $BURN, rORE and $RONKESTR</span></span>
+    </div>
+
+    <div class="status only-weapon">
+      <span class="s tier"><b>Rare</b> 1d6</span>
+      <span class="s">swing <b id="swingNo">7</b></span>
+      <span class="s safe">banked <b id="runBanked">18</b></span>
+      <span class="s risked">at risk <b id="runRisk">24</b></span>
+      <span class="s">shatter <b class="shatterval" id="shatterPct">30%</b><span class="meter" id="meter"></span></span>
+    </div>
+
+    <div class="status only-forge">
+      <span class="s">Common <b>60%</b> 1d4</span>
+      <span class="s">Rare <b>25%</b> 1d6</span>
+      <span class="s">Epic <b>12%</b> 2d6</span>
+      <span class="s">Legendary <b>3%</b> 3d6</span>
+    </div>
+
+    <div class="controls">
+      <div class="weapon">
+        <img class="only-weapon" src="assets/weapon-rare.png" alt="Rare sword" width="29" height="58">
+        <span class="slot only-forge"></span>
+        <dl class="only-weapon"><dt>Rare</dt><dd>1d6</dd></dl>
+        <dl class="only-forge"><dt>No weapon</dt><dd>2 crafts paid</dd></dl>
+      </div>
+
+      <button class="btn btn-primary only-weapon" id="push">Push <small id="pushPct">&middot; 30%</small></button>
+      <button class="btn btn-ghost only-weapon" id="bank">Bank <small id="bankAmt">24</small></button>
+
+      <button class="btn btn-primary only-forge" id="forge">Forge a weapon</button>
+
+      <div class="offering">
+        <p>Feed the Warden <em>6.9&nbsp;$RONKESTR, about&nbsp;$0.03</em>. Every swing hits <b>15% harder</b>. Up to <b>3 today</b>.</p>
+        <button class="btn-offer">Offer</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function(id){ return document.getElementById(id); };
+
+  var POT = 3.82, OTHERS = 3603, FINDER = 0.20;
+  var st = { swing:7, banked:18, risk:24, shatter:0.30, staked:926 };
+
+  if (!reduce) requestAnimationFrame(function(){ $('fill').classList.add('go'); });
+
+  var meter = $('meter');
+  for (var i=0;i<10;i++) meter.appendChild(document.createElement('i'));
+
+  /* the station strip: current step is the brightest thing on the line */
+  function renderLine(){
+    var forging = document.body.dataset.state === 'forge';
+    $('stForge').className  = 'st' + (forging ? ' live' : ' done');
+    $('stStrike').className = 'st' + (forging ? '' : ' live');
+    $('stBank').className   = 'st' + (!forging && st.risk > 0 ? ' ready' : '');
+    $('stChest').className  = 'st';
+    $('stForge').innerHTML  = forging ? '<em></em>Forge' : 'Forge';
+    $('stStrike').innerHTML = forging ? 'Strike' : '<em></em>Strike';
+    $('stBank').innerHTML   = (!forging && st.risk > 0) ? '<s>Bank</s>' : 'Bank';
+  }
+
+  function renderRisk(){
+    var pct = Math.round(st.shatter*100);
+    $('shatterPct').textContent = pct + '%';
+    $('pushPct').innerHTML = '&middot; ' + pct + '%';
+    var heat = Math.min(1, Math.max(0, (st.shatter - 0.10) / 0.80));
+    $('shatterPct').style.letterSpacing = (0.09 - heat*0.11) + 'em';
+    $('shatterPct').style.color = heat > 0.02
+      ? 'color-mix(in srgb, var(--ember) ' + Math.round(heat*100) + '%, var(--bone))'
+      : 'var(--bone)';
+    var on = Math.round(st.shatter*10);
+    Array.prototype.forEach.call(meter.children, function(el,i){
+      el.className = i < on ? 'on' : '';
+      el.style.opacity = i < on ? (0.55 + 0.045*i) : 1;
+    });
+    meter.className = 'meter' + (heat > .5 ? ' hot' : '');
+  }
+
+  function renderStake(bump){
+    var pct   = st.staked / (st.staked + OTHERS);
+    var base  = POT * (1 - FINDER) * pct;
+    $('shareUsd').textContent = '$' + base.toFixed(2);
+    $('crackUsd').textContent = '$' + (POT * FINDER + base).toFixed(2);
+    $('sharePct').textContent = (pct*100).toFixed(1) + '%';
+    $('stakeTotal').textContent = st.staked.toLocaleString('en-US');
+    $('rosterYou').textContent = st.staked.toLocaleString('en-US');
+    $('rosterYouPct').textContent = (pct*100).toFixed(1) + '%';
+    if (bump && !reduce){
+      var el = $('shareUsd');
+      el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+    }
+  }
+
+  function nextRisk(){
+    var next = st.swing + 1;
+    return next <= 5 ? 0 : Math.min(0.90, (next - 5) * 0.10);
+  }
+
+  function render(){
+    $('swingNo').textContent = st.swing;
+    $('runBanked').textContent = st.banked;
+    $('runRisk').textContent = st.risk;
+    $('bankAmt').textContent = st.risk;
+    renderStake(false); renderRisk(); renderLine();
+  }
+
+  var shake = $('shake'), warden = $('warden');
+  function hit(text, miss){
+    if (!reduce){
+      shake.classList.remove('shaking'); void shake.offsetWidth; shake.classList.add('shaking');
+      warden.classList.remove('hit'); void warden.offsetWidth; warden.classList.add('hit');
+    }
+    var p = document.createElement('div');
+    p.className = 'pop' + (miss ? ' miss' : '');
+    p.textContent = text;
+    var r = warden.getBoundingClientRect();
+    p.style.position = 'absolute';
+    p.style.left = (r.left + r.width*0.44 + (Math.random()*60-30)) + 'px';
+    p.style.top  = (r.top + r.height*0.40 + window.scrollY) + 'px';
+    document.body.appendChild(p);
+    setTimeout(function(){ p.remove(); }, reduce ? 300 : 1000);
+  }
+
+  $('push').addEventListener('click', function(){
+    if (Math.random() < st.shatter){
+      hit('shattered', true);
+      st.swing = 0; st.banked = 0; st.risk = 0; st.shatter = 0;
+      document.body.dataset.state = 'forge';
+      render(); measure();
+      return;
+    }
+    var dmg = 1 + Math.floor(Math.random()*6);
+    st.risk += dmg; st.swing += 1; st.shatter = nextRisk();
+    hit('+' + dmg);
+    render();
+  });
+
+  $('bank').addEventListener('click', function(){
+    st.staked += st.risk; st.banked += st.risk;
+    st.risk = 0; st.swing = 0; st.shatter = 0;
+    render(); renderStake(true);
+  });
+
+  $('forge').addEventListener('click', function(){
+    document.body.dataset.state = 'weapon';
+    st.swing = 0; st.banked = 0; st.risk = 0; st.shatter = 0;
+    render(); measure();
+  });
+
+  var rail = $('rail');
+  function measure(){
+    document.documentElement.style.setProperty('--rail-h', rail.offsetHeight + 'px');
+  }
+  if (window.ResizeObserver) new ResizeObserver(measure).observe(rail);
+  window.addEventListener('resize', measure);
+
+  $('dev').addEventListener('click', function(){
+    document.body.dataset.state = document.body.dataset.state === 'weapon' ? 'forge' : 'weapon';
+    if (document.body.dataset.state === 'weapon'){
+      st = { swing:7, banked:18, risk:24, shatter:0.30, staked:st.staked };
+    }
+    render(); measure();
+  });
+
+  render(); measure();
+})();
+</script>
+</body>
+</html>

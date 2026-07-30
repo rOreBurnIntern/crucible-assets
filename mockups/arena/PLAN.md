@@ -246,3 +246,42 @@ Same call the front door reached, for the same reason.
 
 Everything in §7.2 that survived is part of that build, not a follow-up.
 
+### D as built (2026-07-30)
+
+`docs/mockups/2026-07-arena/arena-d-synthesis.html`, both states, both breakpoints.
+
+What it takes from where:
+
+| From | What | Why |
+|---|---|---|
+| A | pot as hero, stake stamped under it, action rail pinned to the bottom | wins reachability, the criterion the mobile funnel runs through |
+| C | `Forge · Strike · Bank · Chest` as a line **inside** that rail | most-praised object in the exercise, without C's four bordered columns |
+| B | Warden at full scale, and the banked/share roster | boss presence, and the only honest publication of the denominator |
+| nobody | the partner-colour page repaint | the visiting Axie player bounced on it in under two seconds |
+
+Findings applied, all from §7.2:
+
+- Pot is a **meter, not a billboard**: the count-up is gone, the fill line stays, and
+  `last crack $2.11` is replaced by `7 cracks so far · $23.17 paid out · biggest $7.89`.
+- `Banked` split in two: the run pile in the rail keeps **Banked**, the cycle figure
+  everywhere else becomes **Your stake** (stamp, roster column, ticker, odds line).
+- The perk gets its counterpart: *"Everyone swings and everyone can crack it. Ronkeverse
+  holders hit 15% harder."*
+- A rotation line: *"Tomorrow Beast Warden · Axie beast, bug and mech"*, with the sprite.
+- The offering is priced in dollars like everything else: `6.9 $RONKESTR, about $0.03`.
+- The craft price **survives into the armed state**, on the station line.
+- The offering sits beside the controls, never above the game the way C's feed slot did.
+- Banked versus at-risk no longer differ by hue alone: solid underline against dashed.
+- The station line's live step is the **brightest** thing on it, not the dimmest.
+- `Records` carries a payload: *"Records · every chest paid"*.
+
+Two composition problems found and fixed while building, both by looking at screenshots
+rather than at the markup: the roster was laid over the Warden's face, which threw away
+the one thing B was contributing; and the sprite's own near-black plate read as a visible
+rectangle once the boss was bright enough to be a presence, fixed with contrast plus a
+radial mask rather than by dimming the boss back down.
+
+**Still open, deliberately not in D:** the +15%/+15% collision between the holder perk and
+the paid offering (§7.2 item 4) is an economy question, and the post-crack explanation for
+the players who did not find it (item 9) belongs to the crack surface, not the arena.
+
