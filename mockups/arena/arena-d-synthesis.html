@@ -78,33 +78,33 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- the pot: a meter, not a billboard ---------- */
 .kicker{
   font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.26em;
-  text-transform:uppercase;color:var(--muted);margin-top:30px;
+  text-transform:uppercase;color:var(--muted);margin-top:28px;
 }
+/* the dollar sign rides higher than the digits in this face, so the label needs
+   more clearance than optical centring would suggest */
 .pot{
   font-family:var(--disp);font-weight:800;font-size:clamp(84px,9.9vw,146px);
   line-height:.8;letter-spacing:-.022em;color:var(--ember);
-  margin-top:14px;font-variant-numeric:tabular-nums;display:block;
+  margin-top:26px;font-variant-numeric:tabular-nums;display:block;
 }
-/* the fill line keeps the "it grows" meaning. The count-up animation is
-   deliberately gone: a giant animated money figure is on our own list of
-   things that read as a scam. */
-.fill{position:relative;margin-top:24px;height:24px;width:min(560px,100%)}
-.fill .track{
-  position:absolute;left:0;right:0;top:10px;height:2px;
-  background:repeating-linear-gradient(to right,rgba(244,237,225,.28) 0 6px,transparent 6px 12px);
+/* Composition, not progress. It used to be a part-width "it grows" bar with an
+   unlabelled maximum, which meant an unreadable axis and two meanings on one
+   object. It is now exactly one thing: what is in the chest, by value.
+   Growth lives in the record line underneath, in words. */
+.fill{position:relative;margin-top:26px;height:15px;width:min(560px,100%);overflow:hidden}
+.fill .bar{display:flex;gap:2px;height:15px;width:100%}
+.fill .seg{height:15px;flex-grow:1;flex-basis:0;animation:grow .85s cubic-bezier(.16,1,.3,1)}
+@keyframes grow{from{transform:scaleX(0);transform-origin:left}to{transform:none}}
+
+/* the legend is the "at a glance" part: swatch, value, token. Same mono system
+   as the rail so the page still only has two type treatments for data. */
+.compo{list-style:none;display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:12px}
+.compo li{
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--muted);
 }
-.fill .ticks{
-  position:absolute;left:0;right:0;top:5px;height:12px;
-  background:repeating-linear-gradient(to right,rgba(244,237,225,.16) 0 1px,transparent 1px 10%);
-}
-.fill .bar{position:absolute;left:0;top:7px;height:8px;width:78%;display:flex;overflow:hidden}
-.fill .seg-usdc{background:var(--ember);flex:63.3 0 0}
-.fill .seg-rk{background:var(--warden);flex:14.7 0 0}
-.fill .head{position:absolute;top:0;height:24px;width:3px;background:var(--bone);left:78%;transform:translateX(-1px)}
-.fill.go .bar{animation:grow 1s cubic-bezier(.16,1,.3,1)}
-.fill.go .head{animation:growhead 1s cubic-bezier(.16,1,.3,1)}
-@keyframes grow{from{width:0}to{width:78%}}
-@keyframes growhead{from{left:0}to{left:78%}}
+.compo i{width:11px;height:11px;display:block;flex:none}
+.compo b{color:var(--bone);font-weight:700}
 
 /* the record, not a single prior draw: the ceiling persona's only hold, and
    the trust instrument the front-door red team ranked highest */
@@ -208,14 +208,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .wardenhead p b{color:var(--warden);font-weight:700}
 /* nothing anywhere told a visiting community that its own day was coming */
+/* same body face as the perk line directly above it: this is a sentence, not a
+   data label, and setting it in uppercase mono made it a wall */
 .tomorrow{
-  position:relative;z-index:3;width:fit-content;margin-left:auto;
-  margin-top:12px;display:flex;align-items:center;gap:9px;
-  font-family:var(--mono);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--muted);border-top:1px solid rgba(244,237,225,.2);padding-top:9px;
+  position:relative;z-index:3;display:block;margin-left:auto;
+  margin-top:12px;padding-top:10px;max-width:36ch;
+  border-top:1px solid rgba(244,237,225,.2);
+  font-size:13.5px;line-height:1.5;color:var(--muted);
 }
-.tomorrow b{color:var(--bone);font-weight:700}
-.tomorrow img{width:26px;height:26px;opacity:.9}
+.tomorrow b{color:rgba(244,237,225,.85);font-weight:600}
 
 /* The roster that lived here has gone to Records. It was imported from
    direction B, it was never one of the five things the arena keeps, and laid
@@ -378,6 +379,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .sheet-fine{
   margin-top:11px;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--muted);
 }
+.sheet-panel.narrow{width:min(480px,100%)}
+.power-lede{margin-top:14px;font-size:15px;line-height:1.55;color:var(--muted)}
+.power-lede b{color:var(--warden);font-family:var(--disp);font-weight:800;font-size:24px;letter-spacing:0}
+.power-actions{display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:18px}
+.power-actions .btn{font-size:24px;height:54px;padding:0 22px}
 
 body[data-state="forge"] .only-weapon{display:none}
 body[data-state="weapon"] .only-forge{display:none}
@@ -490,12 +496,11 @@ body[data-state="weapon"] .only-forge{display:none}
 
   .kicker{margin-top:22px;font-size:11px;letter-spacing:.22em}
   .pot{font-size:88px;margin-top:8px}
-  .fill{height:20px;margin-top:14px;width:100%}
-  .fill .track{top:8px}
-  .fill .ticks{top:4px;height:10px}
-  .fill .bar{top:6px;height:7px}
-  .fill .head{height:20px}
-  .record{margin-top:12px;font-size:11.5px}
+  .fill{height:13px;margin-top:18px;width:100%}
+  .fill .bar,.fill .seg{height:13px}
+  .compo{margin-top:10px;gap:6px 16px}
+  .compo li{font-size:11.5px;gap:7px}
+  .record{margin-top:11px;font-size:11.5px}
 
   .stampwrap{margin-top:20px}
   .stamp{min-width:0;width:100%;transform:rotate(-.9deg);padding:12px 15px 11px;box-shadow:6px 6px 0 var(--ember)}
@@ -535,6 +540,10 @@ body[data-state="weapon"] .only-forge{display:none}
   .buff-sum{font-size:10.5px;letter-spacing:.12em;gap:7px;margin-top:13px;padding-top:11px}
   .buff-sum b{font-size:26px}
   .sheet-fine{font-size:10.5px}
+  .power-lede{font-size:13.5px;margin-top:12px}
+  .power-lede b{font-size:21px}
+  .power-actions{grid-template-columns:1fr;gap:9px;margin-top:14px}
+  .power-actions .btn{font-size:21px;height:48px}
   .pop{font-size:30px}
 }
 
@@ -624,14 +633,50 @@ body[data-state="weapon"] .only-forge{display:none}
       </li>
     </ul>
 
+    <!-- 1 + .15 NFT + .45 three offerings + .03 Atia + .10 RON -->
     <div class="buff-sum">
       <span>Now</span><b class="now">&times;1.45</b>
       <span class="arrow">&rarr;</span>
-      <span>All on</span><b class="max">&times;1.58</b>
+      <span>All on</span><b class="max">&times;1.73</b>
     </div>
 
     <button class="btn btn-primary sheet-go" data-close>Feed the Warden <small>6.9 $RONKESTR, about $0.03</small></button>
     <p class="sheet-fine">One offering left today. It only boosts attacks made after it lands.</p>
+  </div>
+</div>
+
+<!-- Not at full power. Fires once per visit, on the first attack or forge, and
+     ONLY when there is a boost the player could switch on today. A 100 day Atia
+     streak is not something you can fix before your next attack, so nagging
+     about it would make this fire forever and mean nothing. -->
+<div class="sheet" id="powerSheet" hidden>
+  <div class="sheet-scrim" data-close></div>
+  <div class="sheet-panel narrow" role="dialog" aria-modal="true" aria-labelledby="power-title">
+    <div class="sheet-head">
+      <h2 id="power-title">Not at full power</h2>
+      <button class="sheet-x" data-close aria-label="Close">&times;</button>
+    </div>
+    <p class="power-lede">You are attacking at <b class="now">&times;1.45</b>. Two boosts are
+      still available to you today.</p>
+    <ul class="buffs">
+      <li class="off">
+        <span class="tag">Off</span><span class="nm">One more offering</span><span class="amt">+15%</span>
+        <p>6.9 $RONKESTR, about $0.03. Two of three used.</p>
+      </li>
+      <li class="off">
+        <span class="tag">Off</span><span class="nm">Hold 10 RON</span><span class="amt">+10%</span>
+        <p>In your linked wallet. Also multiplies season points by 1.1.</p>
+      </li>
+    </ul>
+    <div class="buff-sum">
+      <span>Now</span><b class="now">&times;1.45</b>
+      <span class="arrow">&rarr;</span>
+      <span>Today</span><b class="max">&times;1.70</b>
+    </div>
+    <div class="power-actions">
+      <button class="btn btn-primary" id="powerBoost">Boost first</button>
+      <button class="btn btn-ghost" data-close>Attack anyway</button>
+    </div>
   </div>
 </div>
 
@@ -646,18 +691,15 @@ body[data-state="weapon"] .only-forge{display:none}
 
     <div class="col">
       <p class="kicker">In the chest</p>
-      <span class="pot">$3.82</span>
+      <span class="pot" id="pot">$3.82</span>
 
-      <div class="fill" id="fill">
-        <div class="ticks"></div>
-        <div class="track"></div>
-        <div class="bar"><span class="seg-usdc"></span><span class="seg-rk"></span></div>
-        <div class="head"></div>
-      </div>
+      <!-- what is actually in the chest, by value. Rendered from CHEST[] so a new
+           token is one row of data, not a layout change. -->
+      <div class="fill"><div class="bar" id="bar"></div></div>
+      <ul class="compo" id="compo"></ul>
 
       <p class="record">
         <b>7 cracks</b> so far &middot; <b>$23.17</b> paid out &middot; biggest <b>$7.89</b>
-        &middot; this one holds <span class="rk">152 $RONKESTR</span>
       </p>
 
       <div class="stampwrap">
@@ -693,9 +735,13 @@ body[data-state="weapon"] .only-forge{display:none}
         <p>Anyone can attack and anyone can crack it. <b>Ronkeverse holders hit 15% harder.</b></p>
       </div>
 
+      <!-- NOT a prediction. The Warden is drawn at rollover from that day's
+           secret seed, so tomorrow's is unknowable today by design. What a
+           visiting community needs is that the rotation exists and comes back
+           round, which is true and says nothing the chain has not decided. -->
       <span class="tomorrow">
-        <img src="assets/wardens/beast.png" alt="">
-        Tomorrow <b>Beast Warden</b> &middot; Axie beast, bug and mech
+        A new Warden is drawn at midnight, and no one knows which.
+        <b>Every community gets about a third of the days.</b>
       </span>
     </div>
 
@@ -764,10 +810,39 @@ body[data-state="weapon"] .only-forge{display:none}
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var $ = function(id){ return document.getElementById(id); };
 
-  var POT = 3.82, OTHERS = 3603, FINDER = 0.20;
+  /* What is in the chest. ONE place to add a token: give it a value and its own
+     brand colour and both the bar and the legend pick it up. This is the single
+     scoped exception to the two-accent lock, because here the colour IS the
+     data. Cash keeps the ember of the headline figure; tokens use their own
+     brand colours ($RONKESTR #27B9FC, and e.g. $BURN #ff4800, SLP, rORE
+     #4ba3f7 when they land). */
+  var CHEST = [
+    { label:'USDC',       usd:3.10, color:'var(--ember)' },
+    { label:'$RONKESTR',  usd:0.72, color:'#27B9FC', qty:'152' }
+  ];
+  var POT = CHEST.reduce(function(a,c){ return a + c.usd; }, 0);
+  var OTHERS = 3603, FINDER = 0.20;
   var st = { swing:7, banked:18, risk:24, shatter:0.30, staked:926 };
 
-  if (!reduce) requestAnimationFrame(function(){ $('fill').classList.add('go'); });
+  (function renderChest(){
+    var bar = $('bar'), leg = $('compo');
+    CHEST.forEach(function(c, i){
+      var seg = document.createElement('span');
+      seg.className = 'seg';
+      seg.style.background = c.color;
+      seg.style.flexGrow = c.usd;
+      seg.style.animationDelay = (i * 90) + 'ms';
+      if (reduce) seg.style.animation = 'none';
+      bar.appendChild(seg);
+
+      var li = document.createElement('li');
+      li.innerHTML = '<i style="background:' + c.color + '"></i>' +
+        '<span><b>$' + c.usd.toFixed(2) + '</b> ' +
+        (c.qty ? c.qty + ' ' : '') + c.label + '</span>';
+      leg.appendChild(li);
+    });
+    $('pot').textContent = '$' + POT.toFixed(2);
+  })();
 
   var meter = $('meter');
   for (var i=0;i<10;i++) meter.appendChild(document.createElement('i'));
@@ -797,6 +872,27 @@ body[data-state="weapon"] .only-forge{display:none}
   }
   wireSheet('sheet', 'howto');
   wireSheet('boostSheet', 'boostBtn');
+
+  /* ---- "not at full power", once per visit ----
+     Gated on boosts the player can act on TODAY, not on the theoretical max.
+     Real implementation reads sessionStorage; a mock uses a variable so the
+     reviewer can see it more than once by reloading. */
+  var powerShown = false;
+  var actionableGain = 0.25;                 // one offering left (+15%) and RON (+10%)
+  function maybeWarnPower(){
+    if (powerShown || actionableGain <= 0) return false;
+    powerShown = true;
+    $('powerSheet').hidden = false;
+    $('powerSheet').querySelector('.sheet-x').focus();
+    return true;
+  }
+  $('powerSheet').addEventListener('click', function(e){
+    if (e.target.closest('[data-close]')) $('powerSheet').hidden = true;
+  });
+  $('powerBoost').addEventListener('click', function(){
+    $('powerSheet').hidden = true;
+    $('boostSheet').hidden = false;
+  });
 
   function renderRisk(){
     var pct = Math.round(st.shatter*100);
@@ -859,6 +955,7 @@ body[data-state="weapon"] .only-forge{display:none}
   }
 
   $('push').addEventListener('click', function(){
+    if (maybeWarnPower()) return;
     if (Math.random() < st.shatter){
       hit('shattered', true);
       st.swing = 0; st.banked = 0; st.risk = 0; st.shatter = 0;
@@ -879,6 +976,7 @@ body[data-state="weapon"] .only-forge{display:none}
   });
 
   $('forge').addEventListener('click', function(){
+    if (maybeWarnPower()) return;
     document.body.dataset.state = 'weapon';
     st.swing = 0; st.banked = 0; st.risk = 0; st.shatter = 0;
     render(); measure();

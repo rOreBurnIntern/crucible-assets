@@ -353,3 +353,38 @@ copy plus an Offer button) to one.
    on `/api/season`), and the same 10 also carries a **×1.1 season points multiplier**,
    which the copy now says because it makes the same 10 RON pay twice.
 
+### D revision 5 (operator review, 2026-07-30)
+
+1. **Tomorrow's Warden is gone, and it should never have been there.** Checked against
+   `game.js`: the class is drawn by `fairRoll('warden', ...)` at rollover from **that day's
+   secret seed**, with only the previous day's class excluded. Tomorrow's is therefore
+   unknowable today *by construction*. Publishing one would mean either inventing it or
+   pre-drawing it, and pre-drawing breaks the commit-reveal scheme the whole game's
+   fairness rests on. The line now says what is true and still answers the Axie persona's
+   "when is my day": a new Warden is drawn at midnight, no one knows which, every community
+   gets about a third of the days.
+2. **The chest bar is now a composition bar.** It was a part-width "it grows" bar whose
+   maximum was never labelled, carrying two meanings at once. It is now exactly one thing:
+   what is in the chest, by value, full width, with a legend underneath
+   (`$3.10 USDC · $0.72 152 $RONKESTR`). Growth moved to the record line, in words.
+   Verified proportional rather than eyeballed: 80.7% / 18.7% rendered against 81.2% /
+   18.8% true.
+   Rendered from a `CHEST[]` array, so **adding SLP, $BURN or rORE is one row of data**,
+   not a layout change. This is the one **scoped exception to the two-accent lock**: here
+   the colour *is* the data. Cash keeps the ember of the headline figure and tokens use
+   their own brand colours.
+3. **"Not at full power"** fires once per visit, on the first attack or forge.
+   ⚠️ Deliberately gated on **boosts the player can act on today**, not on the theoretical
+   maximum. Full power needs a 100 day Atia streak, so a max-based test would fire for
+   effectively every player, every visit, forever, and usually name something they cannot
+   fix before their next attack. That is an interstitial in front of the primary action
+   with no available remedy, which is the exact failure four red-team personas bounced on
+   in direction C. Gated this way it is always actionable and goes quiet once you are
+   topped up. It offers `Boost first` or `Attack anyway`, never blocks, and hands off to
+   the Boost panel.
+4. **`In the chest` had too little clearance** over the dollar sign, which rides higher
+   than the digits in this face. More space above the figure.
+5. Corrected my own arithmetic: the Boost panel's "all on" said ×1.58, which had silently
+   omitted the third offering. It is **×1.73** (`1 + .15 NFT + .45 offerings + .03 Atia +
+   .10 RON`).
+
