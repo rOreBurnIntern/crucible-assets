@@ -265,21 +265,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   font-family:var(--mono);font-size:12px;font-weight:600;
   letter-spacing:.2em;text-transform:uppercase;
 }
-.line .st{display:flex;align-items:center;gap:8px;color:rgba(244,237,225,.34)}
-.line .chev{color:rgba(244,237,225,.26);margin:0 11px;font-size:14px;letter-spacing:0}
-.line .st.done{color:rgba(244,237,225,.5)}
+/* The sequence has exactly TWO states and one marker. Every station is set
+   identically; the only thing that varies is whether you are standing on it.
+   Earlier versions gave Offer its own colour, Forge a "done" grey, Bank a
+   "ready" weight and Offer a small "optional" tag, which is five treatments
+   in a five-word line and reads as noise rather than as an order. */
+.line .st{display:flex;align-items:center;gap:8px;color:rgba(244,237,225,.42)}
+.line .chev{color:rgba(244,237,225,.22);margin:0 12px;font-size:13px;letter-spacing:0}
 .line .st.live{color:var(--bone);font-weight:700}
-/* the one state marker in the rail, reused everywhere it is needed rather than
-   inventing a second device */
+/* the one state marker in the rail, reused rather than inventing a second */
 .line .st.live em,.status .s.risked b::before{
   content:"";font-style:normal;display:inline-block;
   width:7px;height:7px;background:var(--ember);
 }
-.line .st.ready{color:var(--bone);font-weight:700}
-/* the offering leads the sequence because it only buffs attacks that come
-   after it, but it is optional and must not read as a gate */
-.line .st.opt{color:var(--warden)}
-.line .st.opt::after{content:"optional";font-size:9.5px;letter-spacing:.1em;color:var(--muted)}
 /* the craft price has to survive into the armed state: that is where the
    repeat spending happens and every direction dropped it there */
 .line .price{margin-left:auto;color:var(--muted);letter-spacing:.1em;text-transform:none}
@@ -621,7 +619,8 @@ body[data-state="weapon"] .only-forge{display:none}
         <span class="tag">Off</span>
         <span class="nm">Hold RON</span>
         <span class="amt">+10%</span>
-        <p>Hold any RON in your linked wallet.</p>
+        <p>Hold 10 RON or more in your linked wallet. The same 10 also multiplies
+          your season points by 1.1.</p>
       </li>
     </ul>
 
@@ -708,7 +707,7 @@ body[data-state="weapon"] .only-forge{display:none}
 
     <div class="line" id="line">
       <button class="howto" id="howto">How to play</button>
-      <span class="st opt" id="stOffer">Offer</span>
+      <span class="st" id="stOffer">Offer</span>
       <span class="chev">&rsaquo;</span>
       <span class="st" id="stForge">Forge</span>
       <span class="chev">&rsaquo;</span>
@@ -776,9 +775,9 @@ body[data-state="weapon"] .only-forge{display:none}
   /* the station strip: current step is the brightest thing on the line */
   function renderLine(){
     var forging = document.body.dataset.state === 'forge';
-    $('stForge').className  = 'st' + (forging ? ' live' : ' done');
+    $('stForge').className  = 'st' + (forging ? ' live' : '');
     $('stStrike').className = 'st' + (forging ? '' : ' live');
-    $('stBank').className   = 'st' + (!forging && st.risk > 0 ? ' ready' : '');
+    $('stBank').className   = 'st';
     $('stChest').className  = 'st';
     $('stForge').innerHTML  = forging ? '<em></em>Forge' : 'Forge';
     $('stStrike').innerHTML = forging ? 'Attack' : '<em></em>Attack';

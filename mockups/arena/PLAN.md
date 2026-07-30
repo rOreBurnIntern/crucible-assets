@@ -339,3 +339,17 @@ devices, and a body-copy paragraph sitting next to monospaced data.
 The rail went from five type treatments to two, and from two objects on the right (offering
 copy plus an Offer button) to one.
 
+### D revision 4 (operator review, 2026-07-30)
+
+1. **The sequence itself was the busy thing**, not the rail around it. It had five
+   treatments in five words: Offer in Ronkeverse blue with a small "optional" tag, Forge in
+   a "done" grey, Attack in bone with the ember marker, Bank in a "ready" weight, Chest in
+   a third grey. It now has **exactly two states** and one marker: every station is set
+   identically, and the only thing that varies is whether you are standing on it. The
+   "optional" tag is gone from the line; step 1 of How to play already says it.
+2. **The RON buff copy was wrong.** It said "hold any RON", which understates the bar.
+   Verified against `config.js` and the live season API rather than either of our
+   recollections: the threshold is **10 RON** (`bonusThresholdRon: 10`, live and confirmed
+   on `/api/season`), and the same 10 also carries a **×1.1 season points multiplier**,
+   which the copy now says because it makes the same 10 RON pay twice.
+
