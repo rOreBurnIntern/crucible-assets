@@ -388,3 +388,37 @@ copy plus an Offer button) to one.
    omitted the third offering. It is **×1.73** (`1 + .15 NFT + .45 offerings + .03 Atia +
    .10 RON`).
 
+### D revision 6 — buying crafts (2026-07-30)
+
+This closes §4, the last structural hole. Every direction showed how to *forge* and none
+showed how to *pay*, which is the only money-in step in the game.
+
+**Built as a drawer off the forge control, not a place.** Leaving the arena to top up
+would break the loop the redesign exists to protect. The forge state now carries the same
+two-button rhythm as the attack state: `Forge a weapon` and `Buy`. At zero crafts the
+forge greys out and Buy becomes the primary, because it is the only thing left to do.
+
+**Numbers are the live on-chain quote, not invented.** Read from `CrucibleForgeV2.quote()`
+at legs **v22**: one craft is `26.142272 $BURN + 1.728455 rORE + 6.9 $RONKESTR`. The panel
+scales from the per-craft figures so any quantity stays truthful, and leads with the USD
+figure (`~$0.30` for ten) with the token legs underneath, since dollars are the only unit
+every persona in the red team could read.
+
+**Approvals are shown honestly, up front, as a checklist.** This is the real friction and
+the mockups had been hiding it: `useCrucibleForge` needs an ERC-20 approval **per leg**
+before the forge tx, so a first-time buyer faces up to **four transactions** to spend three
+cents. Surfacing them one at a time as surprise wallet prompts is how that becomes a
+bounce. Shown as a list that is mostly already ticked, with `Step 1 of 2` and the
+explicit promise that approving is a one-off per token, it reads as setup rather than as an
+ambush. The no-wallet persona bounced precisely here ("three currencies I have never heard
+of, to make one three-cent purchase"), and this is the cheapest available answer.
+
+Also folded in, as one quiet line rather than the two arena panels they replace: the
+$RONKESTR liquidity note (Ronin Strategy, 10% fee) and the rORE mine-vs-buy nudge
+(~18% a craft).
+
+**Not modelled, and worth deciding before build:** what happens when a player holds none of
+the three tokens at all. Today that is an off-site errand across two venues, and no amount
+of drawer design fixes it. A single-token or RON-denominated purchase path would, and that
+is an economy question rather than a layout one.
+
