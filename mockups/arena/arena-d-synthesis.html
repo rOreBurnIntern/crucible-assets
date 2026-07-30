@@ -409,9 +409,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .buy-for{font-family:var(--mono);font-size:12.5px;line-height:1.55;color:var(--muted)}
 .buy-for b{color:var(--bone);font-weight:700}
 .buy-legs{
-  margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.6;
+  margin-top:12px;display:flex;flex-wrap:wrap;gap:8px 20px;
+  font-family:var(--mono);font-size:12px;color:var(--muted);
 }
+.buy-legs .leg{display:flex;align-items:baseline;gap:6px}
 .buy-legs b{color:rgba(244,237,225,.85);font-weight:700}
+.buy-legs a{
+  color:var(--bone);text-decoration:none;
+  border-bottom:1px solid rgba(244,237,225,.35);padding-bottom:1px;
+}
+.buy-legs a:hover{border-color:var(--bone);color:#fff}
+.buy-get{
+  margin-top:9px;font-family:var(--mono);font-size:11px;color:var(--muted);
+}
 
 .steps-k{
   margin-top:20px;padding-top:13px;border-top:3px solid var(--bone);
@@ -764,6 +774,7 @@ body[data-state="weapon"] .only-forge{display:none}
       <span class="buy-for"><b id="buyN">10</b> crafts<br>about <b id="buySwings">87</b> attacks</span>
     </div>
     <p class="buy-legs" id="buyLegs"></p>
+    <p class="buy-get">Short on any of them? Tap it to go and get more.</p>
 
     <div class="steps-k">One-time approvals</div>
     <ul class="appr" id="appr">
@@ -778,8 +789,9 @@ body[data-state="weapon"] .only-forge{display:none}
       Costs float a little: each leg is re-pegged to about a cent every hour.
     </p>
     <p class="sheet-fine buy-x">
-      $RONKESTR trades only on <a href="#">Ronin Strategy</a>, which takes 10%.
-      Mining your own rORE instead of buying it saves about 18% a craft. <a href="#">How</a>
+      $RONKESTR trades only on Ronin Strategy, which takes 10%. Mining your own rORE
+      instead of buying it saves about 18% a craft.
+      <a href="https://burncoin.tech/miners" target="_blank" rel="noreferrer">How</a>
     </p>
   </div>
 </div>
@@ -1016,10 +1028,19 @@ body[data-state="weapon"] .only-forge{display:none}
      Per-craft leg costs are the LIVE on-chain quote from CrucibleForgeV2
      (legs v22): quote(1) = 26.142272 BURN + 1.728455 rORE + 6.9 RONKESTR.
      Everything below scales from that, so any quantity stays truthful. */
+  /* Where to actually GET each token. Taken from production, with one correction:
+     the live LEG_TOKENS map sends $BURN to Katana, which routes through the taxed
+     BURN/RON pair. burncoin.tech's own Trade $BURN runs the Zap (wBURN/USDC) and
+     skips the 6.66% tax, so that is where a player should be sent. */
   var LEGS = [
-    { sym:'$BURN',      per:26.142272, dp:2 },
-    { sym:'rORE',       per:1.728455,  dp:2 },
-    { sym:'$RONKESTR',  per:6.9,       dp:1 }
+    { sym:'$BURN', per:26.142272, dp:2,
+      url:'https://burncoin.tech/dashboard', where:'burncoin.tech, no 6.66% tax' },
+    { sym:'rORE', per:1.728455, dp:2,
+      url:'https://app.roninchain.com/swap?outputCurrency=0x56418E06A569ce559b457F533A4f8D9D51a27cA8',
+      where:'Katana' },
+    { sym:'$RONKESTR', per:6.9, dp:1,
+      url:'https://roninstrategy.fun/strategy/0x404533a09bf281199ce6b0ef60b7eff7123ff8dc',
+      where:'Ronin Strategy, 10% fee' }
   ];
   var USD_PER_CRAFT = 0.03;
   var SWINGS_PER_CRAFT = 8.7;            // measured: players push well past the safe floor
@@ -1030,8 +1051,10 @@ body[data-state="weapon"] .only-forge{display:none}
     $('buyUsd').textContent = '~$' + (buyN * USD_PER_CRAFT).toFixed(2);
     $('buySwings').textContent = Math.round(buyN * SWINGS_PER_CRAFT);
     $('buyLegs').innerHTML = LEGS.map(function(l){
-      return '<b>' + (l.per * buyN).toFixed(l.dp) + '</b> ' + l.sym;
-    }).join(' &nbsp;·&nbsp; ');
+      return '<span class="leg"><b>' + (l.per * buyN).toFixed(l.dp) + '</b> ' +
+        '<a href="' + l.url + '" target="_blank" rel="noreferrer" title="Get ' + l.sym +
+        ' on ' + l.where + '">' + l.sym + ' &#8599;</a></span>';
+    }).join('');
     $('buyGo').textContent = approved ? ('Buy ' + buyN + ' crafts') : 'Approve $RONKESTR';
     $('appr').lastElementChild.className = approved ? 'done' : 'todo';
     $('appr').lastElementChild.querySelector('.mk').innerHTML = approved ? '&check;' : '';

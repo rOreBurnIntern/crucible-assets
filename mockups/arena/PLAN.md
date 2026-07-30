@@ -417,6 +417,23 @@ Also folded in, as one quiet line rather than the two arena panels they replace:
 $RONKESTR liquidity note (Ronin Strategy, 10% fee) and the rORE mine-vs-buy nudge
 (~18% a craft).
 
+**Each leg links to where you actually get it.** Every token amount in the quote is a link,
+taken from production's `LEG_TOKENS` map, with one deliberate correction:
+
+| Leg | Goes to | Why |
+|---|---|---|
+| $BURN | `burncoin.tech/dashboard` | ⚠️ **not** the Katana link production uses. That routes through the taxed BURN/RON pair; the site's own Trade $BURN runs `useZapSwap` (wBURN/USDC) and skips the **6.66% tax** |
+| rORE | Katana swap, token preselected | production pattern, thin V3 pool is the only market |
+| $RONKESTR | `roninstrategy.fun` | verified 200; the only venue, takes 10% |
+
+⚠️ **Worth fixing in the live site too:** `LEG_TOKENS` in
+`burncoin-frontend-vercel/src/contracts/crucible.js` sends $BURN to `katanaSwap(...)`, so
+the shipped Crucible currently points players at the taxed route. One-line change.
+
+Link verification: `roninstrategy.fun` returns 200. `app.roninchain.com` returns 403 to
+curl and a Cloudflare human-check to a headless browser, so it could not be loaded end to
+end here; the URL matches the pattern production already ships.
+
 **Not modelled, and worth deciding before build:** what happens when a player holds none of
 the three tokens at all. Today that is an off-site errand across two venues, and no amount
 of drawer design fixes it. A single-token or RON-denominated purchase path would, and that
