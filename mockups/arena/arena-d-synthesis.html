@@ -420,8 +420,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .buy-legs a:hover{border-color:var(--bone);color:#fff}
 .buy-get{
-  margin-top:9px;font-family:var(--mono);font-size:11px;color:var(--muted);
+  margin-top:9px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--muted);
 }
+.buy-get b{color:rgba(244,237,225,.85);font-weight:700}
+.buy-get a{color:var(--bone);text-decoration:none;border-bottom:1px solid rgba(244,237,225,.35)}
 
 .steps-k{
   margin-top:20px;padding-top:13px;border-top:3px solid var(--bone);
@@ -641,8 +643,8 @@ body[data-state="weapon"] .only-forge{display:none}
       </li>
       <li>
         <b>Forge a weapon</b>
-        <p>About $0.03, paid in $BURN, rORE and $RONKESTR. Rarer weapons roll bigger dice,
-          so they hit harder.</p>
+        <p>Three to five cents, depending on which tokens the day is charging in.
+          Rarer weapons roll bigger dice, so they hit harder.</p>
       </li>
       <li>
         <b>Attack the Warden</b>
@@ -774,7 +776,11 @@ body[data-state="weapon"] .only-forge{display:none}
       <span class="buy-for"><b id="buyN">10</b> crafts<br>about <b id="buySwings">87</b> attacks</span>
     </div>
     <p class="buy-legs" id="buyLegs"></p>
-    <p class="buy-get">Short on any of them? Tap it to go and get more.</p>
+    <p class="buy-get">
+      Short on any of them? Tap it to go and get more.<br>
+      Most days that third leg is about <a href="https://app.roninchain.com/swap?outputCurrency=0xa8754b9Fa15fc18BB59458815510E40a12cD2014" target="_blank" rel="noreferrer">19 SLP &#8599;</a>
+      and a craft costs about <b>$0.03</b>. Ronke days swap it for $RONKESTR, which today makes it <b>$0.05</b>.
+    </p>
 
     <div class="steps-k">One-time approvals</div>
     <ul class="appr" id="appr">
@@ -878,7 +884,7 @@ body[data-state="weapon"] .only-forge{display:none}
       <span class="st" id="stBank">Bank</span>
       <span class="chev">&rsaquo;</span>
       <span class="st" id="stChest">Chest</span>
-      <span class="price">about <b>$0.03</b> a craft<span class="tokens">, in $BURN, rORE and $RONKESTR</span></span>
+      <span class="price">about <b>$0.05</b> a craft today<span class="tokens">, in $BURN, rORE and $RONKESTR</span></span>
     </div>
 
     <div class="status only-weapon">
@@ -1032,17 +1038,24 @@ body[data-state="weapon"] .only-forge{display:none}
      the live LEG_TOKENS map sends $BURN to Katana, which routes through the taxed
      BURN/RON pair. burncoin.tech's own Trade $BURN runs the Zap (wBURN/USDC) and
      skips the 6.66% tax, so that is where a player should be sent. */
+  /* Live token prices from crucible-price-sync (2026-07-30): BURN $0.00038046,
+     rORE $0.005774, SLP $0.0005144, RONKESTR $0.004748. The USD total is DERIVED
+     from these rather than assumed, which is how the Ronke-day premium below
+     shows up instead of hiding behind a nominal "$0.03". */
   var LEGS = [
-    { sym:'$BURN', per:26.142272, dp:2,
+    { sym:'$BURN', per:26.142272, dp:2, usd:0.00038046,
       url:'https://burncoin.tech/dashboard', where:'burncoin.tech, no 6.66% tax' },
-    { sym:'rORE', per:1.728455, dp:2,
+    { sym:'rORE', per:1.728455, dp:2, usd:0.005774,
       url:'https://app.roninchain.com/swap?outputCurrency=0x56418E06A569ce559b457F533A4f8D9D51a27cA8',
       where:'Katana' },
-    { sym:'$RONKESTR', per:6.9, dp:1,
+    /* the swappable leg. SLP on most days, $RONKESTR on Ronke-Warden days, set by
+       the keeper with setLeg. The client never hardcodes it: production reads the
+       legs from quote() on-chain, so a swap needs no deploy. */
+    { sym:'$RONKESTR', per:6.9, dp:1, usd:0.004748,
       url:'https://roninstrategy.fun/strategy/0x404533a09bf281199ce6b0ef60b7eff7123ff8dc',
       where:'Ronin Strategy, 10% fee' }
   ];
-  var USD_PER_CRAFT = 0.03;
+  var USD_PER_CRAFT = LEGS.reduce(function(a,l){ return a + l.per * l.usd; }, 0);
   var SWINGS_PER_CRAFT = 8.7;            // measured: players push well past the safe floor
   var buyN = 10, approved = false;
 

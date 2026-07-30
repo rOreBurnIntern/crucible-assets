@@ -434,6 +434,39 @@ Link verification: `roninstrategy.fun` returns 200. `app.roninchain.com` returns
 curl and a Cloudflare human-check to a headless browser, so it could not be loaded end to
 end here; the URL matches the pattern production already ships.
 
+**Other days swap the third leg automatically.** The client never hardcodes the legs:
+production reads them from `quote()` on-chain and looks each token up in `LEG_TOKENS`, so
+the keeper's `setLeg` swap (SLP on most days, $RONKESTR on Ronke-Warden days) needs no
+deploy. SLP already has its own entry and Katana link, and `legTokenMeta()` falls back to a
+generic label plus a Katana link for any token a build predates. ⚠️ One gotcha carried
+through: **SLP is 0-decimals**, so amounts are whole tokens.
+
+### ⚠️ A craft does not cost $0.03 on a Ronke day. It costs about $0.05.
+
+Found while sourcing the SLP figure, by running `crucible-price-sync --dry-run --once`
+against live prices (2026-07-30):
+
+| Leg | Amount | Unit price | USD |
+|---|---|---|---|
+| $BURN | 26.142272 | $0.00038046 | $0.0099 |
+| rORE | 1.728455 | $0.005774 | $0.0100 |
+| **$RONKESTR** | **6.9 (pinned)** | $0.004748 | **$0.0328** |
+| | | | **$0.0527** |
+
+The keeper re-pegs $BURN and rORE to a cent each, but the **$RONKESTR leg is a fixed 6.9
+tokens** and is not re-pegged, so its dollar value floats with the token. At today's price
+that one leg is **3.3× its $0.01 design target**, and a Ronke-day craft costs **~75% more
+than a normal SLP day** (~$0.053 vs ~$0.030).
+
+Nothing in the product says so. The whitepaper, `about.html`, the arena and my own earlier
+revisions all quote "~$0.03". Every price in the mockup is now **derived from live per-leg
+prices** rather than asserted, which is what surfaced it.
+
+This is an economy decision, not a layout one, and it joins the list: either re-peg the
+$RONKESTR leg like the other two, accept the premium as a partner-day quirk and say so, or
+lower the pinned amount. Worth noting it makes Ronke days, the ones aimed at onboarding a
+new community, the most expensive days to try the game.
+
 **Not modelled, and worth deciding before build:** what happens when a player holds none of
 the three tokens at all. Today that is an off-site errand across two venues, and no amount
 of drawer design fixes it. A single-token or RON-denominated purchase path would, and that
