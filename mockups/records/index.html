@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crucible Records - UI refresh mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   CRUCIBLE RECORDS - UI refresh.
+
+   Ports the page out of the old "Obsidian Foundry" chrome (16px-radius frosted
+   panels, backdrop-blur, molten crack, mixed Cinzel/Sora/mono headings) into
+   Direction D's language: flat ink, zero radius, hairline rules, Big Shoulders
+   numerals, mono kickers. Same components, same data, same money logic.
+
+   Four changes beyond the skin:
+
+   1. LAYOUT. The old grid was a rigid `repeat(3, 1fr)` with a 3-panel stack in
+      column 3 and one short panel each in columns 1-2, so ~40% of the desktop
+      page was void. Now: two full-width bands (the record, your ledger) over
+      three columns that are all list-shaped and therefore self-balancing.
+
+   2. THE RECORD LEADS, and it is finally correct. The page's job is proof, but
+      the proof number did not exist on it: chest/USDC earnings ($35.04) and
+      season RON prizes ($113.67) lived on two different boards and were never
+      added up. All-time paid is $148.71 to 21 players. That is the single
+      strongest thing this game can say and it was nowhere on the page.
+
+   3. DUPLICATION REMOVED. "How it works" and the footer paragraph both restated
+      rules that about.html owns - and both still said "Push", renamed "Attack"
+      in the arena on 2026-07-30. Collapsed to one link-out.
+
+   4. The chest headline no longer repeats itself. The old panel printed $5.38
+      and the $RONKESTR split twice inside one card.
+
+   Every figure below is REAL, read from the live API and game DB on 2026-07-31.
+   The ledger column is skmd's actual row.
+   ========================================================================== */
+:root{
+  --ink:#100d0b;
+  --ink-2:#161110;
+  --bone:#f4ede1;
+  --muted:#9a8d7d;
+  --ember:#ff5a12;
+  --ronkestr:#27B9FC;
+  --good:#8fd6a0;
+  --bad:#ff8f8f;
+
+  --disp:'Big Shoulders Display',system-ui,sans-serif;
+  --body:'Sora',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+
+  --pad:44px;
+  --rule:rgba(244,237,225,.14);
+  --rule-soft:rgba(244,237,225,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0}
+html,body{background:var(--ink);color:var(--bone)}
+body{font-family:var(--body);-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden}
+img{display:block;image-rendering:pixelated}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--pad) 70px}
+
+/* ---------- topbar: same grammar as the arena ---------- */
+.top{
+  max-width:1280px;margin:0 auto;padding:22px var(--pad) 13px;
+  display:flex;align-items:baseline;gap:22px;flex-wrap:wrap;
+  border-bottom:1px solid var(--rule);
+}
+.mark{font-family:var(--disp);font-weight:800;font-size:24px;letter-spacing:.02em;line-height:.84;text-transform:uppercase}
+.top-sp{flex:1}
+.backlink,.ruleslink{
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;border-bottom:1px solid rgba(244,237,225,.3);padding-bottom:2px;
+}
+.backlink:hover,.ruleslink:hover{color:var(--bone);border-color:var(--bone)}
+.daymark{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+.daymark b{color:var(--bone);font-weight:700}
+.daymark i{width:1px;height:11px;background:rgba(244,237,225,.24);display:block;font-style:normal}
+.player{display:flex;align-items:center;gap:9px;font-size:13px}
+.avatar{width:22px;height:22px;background:var(--ember);color:var(--ink);font-family:var(--disp);font-weight:800;font-size:14px;display:grid;place-items:center;flex:none}
+.handle{font-weight:600;font-size:13px}
+.wallet{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--rule);padding:4px 9px}
+
+.kicker{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- band 1: THE RECORD ---------- */
+.band{padding:34px 0 30px;border-bottom:1px solid var(--rule)}
+.band-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.record-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:24px}
+.stat{padding-right:38px;border-right:1px solid var(--rule-soft)}
+.stat:last-child{border-right:0;padding-right:0}
+.stat:not(:first-child){padding-left:38px}
+.stat-lbl{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.stat-val{
+  font-family:var(--disp);font-weight:800;line-height:.82;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;display:block;margin-top:12px;font-size:clamp(52px,5.4vw,74px);
+}
+.stat-val.ember{color:var(--ember)}
+.stat-sub{margin-top:13px;font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--muted)}
+.stat-sub b{color:var(--bone);font-weight:600}
+
+/* the one sanctioned break from the two-accent lock: here the colour IS the data */
+.compo{margin-top:15px;display:flex;gap:2px;height:11px;width:100%;max-width:300px}
+.compo span{height:11px}
+.compo-key{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 18px;list-style:none}
+.compo-key li{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.compo-key i{width:9px;height:9px;display:block;flex:none}
+.compo-key b{color:var(--bone);font-weight:700}
+
+/* ---------- band 2: YOUR LEDGER, horizontal so it stops being a tower ---------- */
+.ledger-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:0;margin-top:24px}
+.lgroup{padding:0 30px;border-right:1px solid var(--rule-soft)}
+.lgroup:first-child{padding-left:0}
+.lgroup:last-child{border-right:0;padding-right:0}
+.lh-lbl{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.lh-val{font-family:var(--disp);font-weight:800;font-size:50px;line-height:.84;letter-spacing:-.015em;font-variant-numeric:tabular-nums;display:block;margin-top:11px}
+.lh-val.good{color:var(--good)}
+.lh-val.ember{color:var(--ember)}
+.lh-note{margin-top:11px;font-family:var(--mono);font-size:11.5px;line-height:1.65;color:var(--muted)}
+.lh-note b{color:var(--bone);font-weight:600}
+.subhead{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.lrow{display:flex;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px solid var(--rule-soft);font-size:13px}
+.lrow:last-child{border-bottom:0}
+.lrow span{color:var(--muted);flex:1;min-width:0}
+.lrow b{font-family:var(--mono);font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lrow b.good{color:var(--good)}
+.lrow b.spent{color:var(--muted)}
+.lrow b.bad{color:var(--bad)}
+.txlink{color:var(--good);text-decoration:none;border-bottom:1px solid rgba(143,214,160,.4)}
+
+/* ---------- three self-balancing list columns ---------- */
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 48px;align-items:start;padding-top:30px}
+.col-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;min-height:30px}
+
+.seg{display:inline-flex;gap:0;border:1px solid var(--rule)}
+.seg button{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);padding:6px 12px;border-right:1px solid var(--rule);
+}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--ember);color:var(--ink);font-weight:700}
+
+/* board rows: proportion shown as a hairline UNDER the row, so the board stays
+   a board and does not grow a second column of chrome */
+.rows{list-style:none}
+.rows li{
+  position:relative;display:flex;align-items:baseline;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--rule-soft);font-size:14px;
+}
+.rows li::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:var(--w,0);background:var(--ember);opacity:.7}
+.rank{font-family:var(--mono);font-size:12px;color:var(--muted);width:16px;flex:none}
+.medal{width:16px;text-align:center;flex:none;font-size:12px}
+.who{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who.me{color:var(--ember)}
+.num{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.pct{font-family:var(--mono);font-size:12px;color:var(--muted);width:50px;text-align:right;flex:none}
+
+/* feeds */
+.feed{list-style:none;max-height:392px;overflow:auto}
+.feed li{
+  display:flex;gap:12px;align-items:baseline;padding:8px 0;
+  border-bottom:1px solid var(--rule-soft);font-family:var(--mono);font-size:12px;color:var(--muted);
+}
+.feed li:last-child{border-bottom:0}
+.feed b{color:var(--bone);font-weight:600}
+.feed .txt{flex:1;min-width:0;line-height:1.55}
+.feed time{margin-left:auto;font-size:11px;letter-spacing:.06em;opacity:.7;white-space:nowrap;flex:none}
+.r-common{color:#8a8a8a}.r-rare{color:#4a9eff}.r-epic{color:#9c6fff}.r-legendary{color:#ffb020}
+.shatter{color:var(--ember)}
+.win{color:var(--good)}
+.tokline{color:var(--ronkestr)}
+.note{margin-top:16px;font-size:12.5px;line-height:1.65;color:var(--muted)}
+.note b{color:var(--bone);font-weight:600}
+
+/* ---------- rORE cross-sell: a strip, not a floating card ---------- */
+.crosssell{
+  margin-top:32px;padding:16px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);
+}
+.cs-mark{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ronkestr);border:1px solid rgba(39,185,252,.4);padding:5px 10px}
+.crosssell b{color:var(--bone);font-weight:600}
+.cs-go{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);text-decoration:none;border-bottom:1px solid var(--bone);padding-bottom:2px}
+
+/* ---------- footer ---------- */
+.foot{padding-top:26px;display:flex;flex-direction:column;gap:12px}
+.fair{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.65;flex-wrap:wrap}
+.dot{width:7px;height:7px;background:var(--good);flex:none;align-self:center}
+.fair code{color:var(--bone);background:rgba(244,237,225,.06);padding:2px 6px}
+.fair a{color:var(--bone);text-decoration:none;border-bottom:1px solid rgba(244,237,225,.3)}
+.sink{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.7}
+.sink b{color:var(--bone);font-weight:600}
+.rulesout{margin-top:4px;font-size:13.5px;color:var(--muted)}
+.rulesout a{color:var(--ember);text-decoration:none;border-bottom:1px solid rgba(255,90,18,.45)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 40px}
+  .cols > div:last-child{grid-column:1/-1;margin-top:8px}
+  .ledger-grid{grid-template-columns:1fr 1fr}
+  .lgroup{padding:22px 24px;border-bottom:1px solid var(--rule-soft)}
+  .lgroup:nth-child(2n){border-right:0;padding-right:0}
+  .lgroup:nth-child(2n+1){padding-left:0}
+}
+@media (max-width:720px){
+  :root{--pad:20px}
+  .top{gap:12px 16px;padding-top:18px}
+  .top-sp{display:none}
+  .cols{grid-template-columns:minmax(0,1fr);gap:0}
+  .cols > div:last-child{grid-column:auto;margin-top:0}
+  .cols > div{border-bottom:1px solid var(--rule);padding-bottom:26px;margin-bottom:26px}
+  .cols > div:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+  .record-grid,.ledger-grid{grid-template-columns:1fr}
+  .stat{padding:0 0 22px;border-right:0;border-bottom:1px solid var(--rule-soft);margin-bottom:22px}
+  .stat:not(:first-child){padding-left:0}
+  .stat:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+  .stat-val{font-size:clamp(56px,15vw,72px)}
+  .lgroup{padding:20px 0;border-right:0}
+  .lgroup:first-child{padding-top:0}
+  .lgroup:last-child{border-bottom:0;padding-bottom:0}
+  .feed{max-height:320px}
+}
+
+/* mockup-only scaffolding */
+.mk{max-width:1280px;margin:0 auto;padding:14px var(--pad);font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--rule-soft)}
+.mk b{color:var(--ember)}
+</style>
+</head>
+<body>
+
+<div class="mk"><b>Mockup</b> &nbsp;/&nbsp; Crucible Records, UI refresh &nbsp;/&nbsp; real data, 2026-07-31 &nbsp;/&nbsp; not live</div>
+
+<header class="top">
+  <span class="mark">Crucible</span>
+  <a class="backlink" href="#">&larr; The arena</a>
+  <a class="ruleslink" href="#">Full rules</a>
+  <span class="top-sp"></span>
+  <span class="daymark">Day <b>30</b><i></i>Season <b>S3</b></span>
+  <span class="player">
+    <span class="avatar">S</span>
+    <span class="handle">skmd</span>
+    <span class="wallet">&#9939; 0x7d69&hellip;4cB32</span>
+  </span>
+</header>
+
+<div class="wrap">
+
+  <!-- ===================== BAND 1 - THE RECORD ===================== -->
+  <section class="band">
+    <div class="band-head">
+      <span class="kicker">The record</span>
+      <span class="tag">Every payout settles on-chain</span>
+    </div>
+    <div class="record-grid">
+
+      <div class="stat">
+        <span class="stat-lbl">Paid to players, all time</span>
+        <span class="stat-val ember">$148.71</span>
+        <p class="stat-sub">
+          To <b>21</b> players over <b>30</b> days.<br>
+          <b>$113.67</b> in season prizes, <b>$35.04</b> from chests.<br>
+          <b>4</b> chests cracked so far.
+        </p>
+      </div>
+
+      <div class="stat">
+        <span class="stat-lbl">In the chest right now</span>
+        <span class="stat-val">$5.38</span>
+        <div class="compo">
+          <span style="flex:4.10;background:var(--ember)"></span>
+          <span style="flex:1.28;background:var(--ronkestr)"></span>
+        </div>
+        <ul class="compo-key">
+          <li><i style="background:var(--ember)"></i><b>$4.10</b> USDC</li>
+          <li><i style="background:var(--ronkestr)"></i><b>$1.28</b> $RONKESTR</li>
+        </ul>
+        <p class="stat-sub">Grows every day until someone cracks it open.</p>
+      </div>
+
+      <div class="stat">
+        <span class="stat-lbl">Season 3 prize</span>
+        <span class="stat-val">~$52</span>
+        <p class="stat-sub">
+          <b>~1,093 RON</b>, paid at close.<br>
+          Closes in <b>13d 4h</b>.<br>
+          Bank damage any day this month to enter.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== BAND 2 - YOUR LEDGER ===================== -->
+  <section class="band">
+    <div class="band-head">
+      <span class="kicker">Your ledger</span>
+      <span class="tag">Real money &middot; chests pay USDC, seasons pay RON</span>
+    </div>
+    <div class="ledger-grid">
+
+      <div class="lgroup">
+        <span class="lh-lbl">Earned, all time</span>
+        <span class="lh-val good">$32.89</span>
+        <p class="lh-note">
+          <b>$4.10</b> from chest splits<br>
+          <b>$28.79</b> from the S2 season prize
+        </p>
+      </div>
+
+      <div class="lgroup">
+        <span class="lh-lbl">Riding on the chest</span>
+        <span class="lh-val ember">$1.68</span>
+        <p class="lh-note">
+          <b>31.2%</b> of the pot &mdash; 1,704 of 5,454 damage banked
+        </p>
+      </div>
+
+      <div class="lgroup">
+        <p class="subhead">On the line right now</p>
+        <div class="lrow"><span>Your share if it cracks</span><b class="good">$1.68</b></div>
+        <div class="lrow"><span>&hellip;if <em style="font-style:normal;color:var(--bone)">you</em> crack it</span><b class="good">$2.42</b></div>
+        <div class="lrow"><span>Finder&rsquo;s cut</span><b>+20%</b></div>
+        <div class="lrow"><span>Hunts today</span><b>20</b></div>
+      </div>
+
+      <div class="lgroup">
+        <p class="subhead">&#127942; Season 3 &middot; in progress</p>
+        <div class="lrow"><span>Points</span><b>19,430</b></div>
+        <div class="lrow"><span>Share of the pool</span><b>33.1%</b></div>
+        <div class="lrow"><span>Est. payout</span><b class="good">~361 RON</b></div>
+        <div class="lrow"><span>S2 prize, paid</span><b><a class="txlink" href="#">~$28.79 &#8599;</a></b></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== THREE LIST COLUMNS ===================== -->
+  <div class="cols">
+
+    <div>
+      <div class="col-head">
+        <div class="seg">
+          <button class="on">Chest</button>
+          <button>Winnings</button>
+          <button>Season</button>
+        </div>
+        <span class="tag">Live shares</span>
+      </div>
+      <ul class="rows">
+        <li style="--w:37.4%"><span class="rank">1</span><span class="medal">&#129351;</span><span class="who">Puck</span><span class="num">2,042</span><span class="pct">37.4%</span></li>
+        <li style="--w:31.2%"><span class="rank">2</span><span class="medal">&#129352;</span><span class="who me">skmd</span><span class="num">1,704</span><span class="pct">31.2%</span></li>
+        <li style="--w:28.3%"><span class="rank">3</span><span class="medal">&#129353;</span><span class="who">JohnnyCola</span><span class="num">1,545</span><span class="pct">28.3%</span></li>
+        <li style="--w:3.0%"><span class="rank">4</span><span class="medal"></span><span class="who">xines007</span><span class="num">163</span><span class="pct">3.0%</span></li>
+      </ul>
+      <p class="note">
+        Banked damage is your share. Whoever cracks the chest takes a <b>20% finder&rsquo;s cut</b>,
+        and the rest splits by these shares.
+      </p>
+    </div>
+
+    <div>
+      <div class="col-head">
+        <span class="kicker">Chest log</span>
+        <span class="tag">Every draw</span>
+      </div>
+      <ul class="feed">
+        <li><span class="txt">Rolled over &rarr; grows to <b>$5.12</b> <span class="tokline">incl. 214 $RONKESTR</span></span><time>Day 29</time></li>
+        <li><span class="txt">Rolled over &rarr; grows to <b>$3.10</b></span><time>Day 28</time></li>
+        <li><span class="txt"><span class="win">&#128142; JohnnyCola cracked it</span> &mdash; <b>$2.11</b> <span class="tokline">incl. 414 $RONKESTR</span></span><time>Day 27</time></li>
+        <li><span class="txt"><span class="win">&#128142; JohnnyCola cracked it</span> &mdash; <b>$7.88</b></span><time>Day 26</time></li>
+        <li><span class="txt">Rolled over &rarr; grows to <b>$7.44</b></span><time>Day 25</time></li>
+        <li><span class="txt">Rolled over &rarr; grows to <b>$6.10</b></span><time>Day 24</time></li>
+        <li><span class="txt">Rolled over &rarr; grows to <b>$5.16</b></span><time>Day 23</time></li>
+        <li><span class="txt">Rolled over &rarr; grows to <b>$4.21</b></span><time>Day 22</time></li>
+        <li><span class="txt">Rolled over &rarr; grows to <b>$3.27</b></span><time>Day 21</time></li>
+        <li><span class="txt">Rolled over &rarr; grows to <b>$2.33</b></span><time>Day 20</time></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="col-head">
+        <span class="kicker">Hunt log</span>
+        <div class="seg">
+          <button class="on">Everyone</button>
+          <button>Mine</button>
+        </div>
+      </div>
+      <ul class="feed">
+        <li><span class="txt">&#128165; <b>skmd</b> &middot; <span class="r-rare">Rare 1d6</span> &middot; <span class="shatter">shattered</span> &mdash; kept <b>36</b></span><time>38m</time></li>
+        <li><span class="txt">&#128165; <b>skmd</b> &middot; <span class="r-rare">Rare 1d6</span> &middot; <span class="shatter">shattered</span> &mdash; kept <b>33</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>skmd</b> &middot; <span class="r-epic">Epic 2d6</span> &middot; banked <b>72</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>skmd</b> &middot; <span class="r-common">Common 1d4</span> &middot; banked <b>29</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>skmd</b> &middot; <span class="r-common">Common 1d4</span> &middot; banked <b>29</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>skmd</b> &middot; <span class="r-rare">Rare 1d6</span> &middot; banked <b>44</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>skmd</b> &middot; <span class="r-rare">Rare 1d6</span> &middot; banked <b>39</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>skmd</b> &middot; <span class="r-common">Common 1d4</span> &middot; banked <b>31</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>skmd</b> &middot; <span class="r-common">Common 1d4</span> &middot; banked <b>32</b></span><time>1h</time></li>
+        <li><span class="txt">&#9876; <b>Puck</b> &middot; <span class="r-legendary">Legendary 3d6</span> &middot; banked <b>96</b></span><time>2h</time></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="crosssell">
+    <span class="cs-mark">&#9935; Auto</span>
+    <span>Auto-mine your rORE instead of buying it &mdash; <b>save ~17% per craft</b>.</span>
+    <a class="cs-go" href="#">How &rarr;</a>
+  </div>
+
+  <footer class="foot">
+    <div class="fair">
+      <span class="dot"></span>
+      <span>
+        Provably fair &mdash; day 30 rolls locked to <code>8eb52bd566fcb344&hellip;</code>, seed revealed at settlement.
+        <a href="#">commitment</a> &middot; <a href="#">how to verify</a>
+      </span>
+    </div>
+    <div class="sink">
+      Forged in so far: <b>94,995</b> $BURN &middot; <b>3,070.7</b> rORE &middot; <b>32,034</b> SLP &middot; <b>1,173</b> $RONKESTR across <b>2,387</b> crafts
+    </div>
+    <p class="rulesout">
+      Dice, odds, shatter rules, perks and the fairness scheme are all in the <a href="#">full rules &rarr;</a>
+    </p>
+  </footer>
+
+</div>
+
+</body>
+</html>
