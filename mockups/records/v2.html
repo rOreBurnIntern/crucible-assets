@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crucible — Payment record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   CRUCIBLE — PAYMENT RECORD (records page, v2)
+
+   v2 after two external adversarial reviews + a 4-proposal / 3-lens judge panel.
+
+   SPINE: evidence-first. Every claim on this page sits next to the transaction
+   that proves it. The unflattering arithmetic is printed by us, in the smallest
+   type on the page, at the foot of our own ledger.
+
+   THE ONE RULE that carries the whole design:
+     SOLID BONE + a hash  = money that LEFT the wallet.
+     OUTLINE + no hash    = money that is OWED.
+   It is pre-verbal, costs no extra colour, and extends free to any future
+   liability. (Best idea from the panel; kept verbatim.)
+
+   DELIBERATE DEPARTURE FROM THE PANEL: the winning proposal made a raw
+   66-character hash the largest object on the page. The newcomer lens scored
+   that 2/10 — "the largest object is 66 characters of noise" — and the brief
+   asks for something a human can digest. So the readable AMOUNT leads and the
+   hash sits directly beneath it as a prominent, clickable credential. Evidence
+   adjacency is preserved; legibility is not sacrificed to make a point.
+
+   CORRECTIONS TO v1, ALL VERIFIED AGAINST ember.db AND THE PAYOUT FILES:
+   - "4 chests cracked (~1 per 7.5 days)" was WRONG — it came from
+     /api/chest-log, which returns only the last 20 draws. chest_draws holds 29
+     nights: 7 cracks, 22 rollovers = ~1 crack every 4.1 days (24% of nights).
+   - All-time paid displays as $148.72, not $148.71: $113.67 + $35.05. Computed
+     unrounded, rounded at display, total forced to equal the sum of the
+     displayed rows. (Raw is 148.7123; a page about honesty cannot print a
+     total that does not add.)
+   - The `payouts` TABLE is missing day 1 ($1.00) and sums to $34.05. The 27
+     payout FILES sum to $35.045004 and all 27 carry a tx hash. Build from files.
+
+   ACCESSIBILITY (measured, not asserted — ratios against #100d0b):
+     bone #f4ede1 16.64 · dim #b3a695 8.12 · muted #9a8d7d 5.98 · ember 6.20
+     line-ctl #6a6158 3.19  → control borders, passes WCAG 1.4.11
+     line     #524940 2.20  → section boundaries
+     line-soft #3a332c 1.56 → dense row dividers (decorative, exempt)
+   Timestamps no longer use opacity:.7 (that was 3.50:1 on 11px — a fail).
+   Real headings, aria-pressed on the segmented controls, visible focus rings,
+   and NO nested scrolling on mobile.
+   ========================================================================== */
+:root{
+  --ink:#100d0b;
+  --ink-2:#17130f;
+  --bone:#f4ede1;
+  --dim:#b3a695;
+  --muted:#9a8d7d;
+  --ember:#ff5a12;
+  --ronkestr:#27B9FC;
+  --good:#8fd6a0;
+
+  --line-ctl:#6a6158;
+  --line:#524940;
+  --line-soft:#3a332c;
+
+  --disp:'Big Shoulders Display',system-ui,sans-serif;
+  --body:'Sora',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --pad:44px;
+}
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--ember);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--pad) 80px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- shared type ---------- */
+.kick{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.meta{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted)}
+h2{font-family:var(--disp);font-weight:800;font-size:26px;line-height:1;letter-spacing:.01em;text-transform:uppercase;color:var(--bone)}
+h3{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:14.5px;line-height:1.6;color:var(--dim);max-width:64ch}
+.lede b{color:var(--bone);font-weight:600}
+
+/* ---------- band 0: provenance ---------- */
+.prov{
+  max-width:1180px;margin:0 auto;padding:14px var(--pad);
+  display:flex;gap:10px 26px;flex-wrap:wrap;align-items:baseline;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.prov .brand{color:var(--bone);font-weight:700;letter-spacing:.1em}
+.prov .sp{flex:1}
+.prov b{color:var(--bone);font-weight:600}
+
+/* ---------- band 1: the exhibit ---------- */
+.exhibit{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:0 52px;padding:38px 0 40px;border-bottom:1px solid var(--line)}
+.ex-l{min-width:0;border-right:1px solid var(--line-soft);padding-right:52px}
+.ex-r{min-width:0}
+.ex-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.stepper{display:inline-flex;border:1px solid var(--line-ctl)}
+.stepper button{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-right:1px solid var(--line-ctl)}
+.stepper button:last-child{border-right:0}
+.stepper button:hover{color:var(--bone)}
+.rule-line{margin:14px 0 20px;font-size:13.5px;line-height:1.6;color:var(--dim)}
+.stamp{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--bone);margin-bottom:12px}
+.stamp .sep{color:var(--muted);margin:0 8px}
+
+/* the readable hero: the amount, not the hash */
+.amount{font-family:var(--disp);font-weight:800;font-size:44px;line-height:.9;letter-spacing:-.01em;color:var(--bone);font-variant-numeric:tabular-nums}
+.amount .to{color:var(--muted);font-size:26px;margin-left:6px}
+.amount-sub{margin-top:9px;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+
+.recips{list-style:none;margin:22px 0 0;border-top:1px solid var(--line-soft)}
+.recips li{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
+.recips .h{font-weight:600;color:var(--bone);min-width:104px}
+.recips .w{font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:1;min-width:0}
+.recips .n{font-family:var(--mono);font-size:13px;color:var(--bone);font-variant-numeric:tabular-nums}
+.recips .why{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;width:112px;text-align:right}
+.recon{display:flex;align-items:baseline;gap:12px;padding:11px 0 0;border-left:2px solid var(--ember);padding-left:14px;margin-top:14px;font-family:var(--mono);font-size:12.5px;color:var(--bone)}
+.recon span{color:var(--muted);flex:1}
+
+/* the hash: prominent credential, not the biggest mass */
+.receipt{margin-top:22px;border:1px solid var(--line);padding:16px 18px;background:var(--ink-2)}
+.receipt .rl{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.hash{font-family:var(--mono);font-size:14px;line-height:1.55;word-break:break-all;color:var(--bone);text-decoration:none;border-bottom:1px solid var(--ember);display:inline}
+.hash:hover{color:var(--ember)}
+.receipt .go{display:inline-block;margin-top:11px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ember);text-decoration:none;border-bottom:1px solid var(--ember);padding-bottom:2px}
+.receipt .second{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);font-family:var(--mono);font-size:11.5px;color:var(--muted);line-height:1.6}
+.receipt .second a{color:var(--dim);border-bottom:1px solid var(--line-ctl);text-decoration:none;word-break:break-all}
+.footnote{margin-top:14px;font-family:var(--mono);font-size:11px;line-height:1.65;color:var(--muted)}
+
+/* right column: what is OWED — the outline half of the colour law */
+.owed{border:1px solid var(--line);padding:20px}
+.owed + .owed{margin-top:16px}
+.owed-l{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.owed-v{font-family:var(--disp);font-weight:800;font-size:34px;line-height:.9;color:var(--muted);font-variant-numeric:tabular-nums;display:block;margin-top:9px}
+.owed-n{margin-top:11px;font-family:var(--mono);font-size:11.5px;line-height:1.65;color:var(--muted)}
+.owed-n b{color:var(--dim);font-weight:600}
+.compo{margin-top:13px;display:flex;gap:2px;height:10px}
+.compo span{height:10px}
+.compo-k{margin-top:9px;display:flex;flex-wrap:wrap;gap:5px 16px;list-style:none}
+.compo-k li{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.compo-k i{width:8px;height:8px;display:block;flex:none}
+.law{margin-top:18px;font-family:var(--mono);font-size:11px;line-height:1.85;color:var(--muted)}
+.law i{display:inline-block;width:9px;height:9px;margin-right:8px;vertical-align:baseline}
+.law .solid{background:var(--bone)}
+.law .out{border:1px solid var(--line-ctl)}
+
+/* ---------- band 2: decoder ---------- */
+.decoder{padding:32px 0 34px;border-bottom:1px solid var(--line)}
+.dec-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 44px;margin-top:18px}
+.dec-grid dt{font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--bone);padding-top:13px;border-top:1px solid var(--line-soft)}
+.dec-grid dd{font-size:13.5px;line-height:1.55;color:var(--dim);padding:5px 0 14px}
+
+/* ---------- band 3: the ledger ---------- */
+.ledger{padding:34px 0 30px;border-bottom:1px solid var(--line)}
+.tbl{width:100%;border-collapse:collapse;margin-top:18px}
+.tbl th{
+  font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--line);
+}
+.tbl th.r,.tbl td.r{text-align:right}
+/* only the LAST column loses its gutter — zeroing it on every .r cell ran the
+   wallet count straight into the source label ("5GAME POT") */
+.tbl th:last-child,.tbl td:last-child{padding-right:0}
+.tbl th.num,.tbl td.num{padding-right:26px}
+.tbl td{font-family:var(--mono);font-size:12.5px;padding:10px 14px 10px 0;border-bottom:1px solid var(--line-soft);color:var(--dim);font-variant-numeric:tabular-nums;vertical-align:baseline}
+.tbl td.amt{color:var(--bone);font-weight:600}
+.tbl td.date{color:var(--muted);white-space:nowrap}
+.tbl .src{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tbl .src.ext{color:var(--ronkestr)}
+.tbl a.tx{color:var(--dim);text-decoration:none;border-bottom:1px solid var(--line-ctl);white-space:nowrap}
+.tbl a.tx:hover{color:var(--ember);border-color:var(--ember)}
+.tbl tr.season td{background:rgba(39,185,252,.04)}
+.more{margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.more button{color:var(--dim);border-bottom:1px solid var(--line-ctl);padding-bottom:2px;font-family:var(--mono);font-size:11.5px}
+
+/* the reconciliation footer — smallest type on the page, on purpose */
+.recon-foot{
+  margin-top:22px;padding-top:16px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;line-height:1.85;color:var(--muted);max-width:96ch;
+}
+.recon-foot b{color:var(--dim);font-weight:600}
+
+/* ---------- band 4: three columns ---------- */
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 44px;padding-top:32px;align-items:start}
+.col{min-width:0}
+.col-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;min-height:28px}
+.seg{display:inline-flex;border:1px solid var(--line-ctl)}
+.seg button{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:5px 10px;border-right:1px solid var(--line-ctl)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ember);color:var(--ink);font-weight:700}
+
+.rows{list-style:none}
+.rows li{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
+.rows .rk{font-family:var(--mono);font-size:11.5px;color:var(--muted);width:16px;flex:none}
+.rows .nm{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--bone)}
+.rows .nm.me{color:var(--ember)}
+.rows .v{font-family:var(--mono);font-size:12.5px;color:var(--bone);font-variant-numeric:tabular-nums}
+.rows .sub{font-family:var(--mono);font-size:11px;color:var(--muted);width:74px;text-align:right;flex:none}
+
+/* cadence spark — 29 nights, orange = cracked */
+.spark{display:flex;align-items:flex-end;gap:2px;height:38px;margin:4px 0 8px}
+.spark i{flex:1;background:var(--line-ctl);display:block;min-height:2px}
+.spark i.hit{background:var(--ember)}
+.spark-cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+
+.feed{list-style:none}
+.feed li{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line-soft);font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.55}
+.feed .t{flex:1;min-width:0}
+.feed b{color:var(--bone);font-weight:600}
+.feed time{margin-left:auto;font-size:11px;letter-spacing:.05em;color:var(--muted);white-space:nowrap;flex:none}
+.feed .crack{color:var(--ember);font-weight:600}
+.feed .carry{color:var(--muted)}
+.r-common{color:#9a9a9a}.r-rare{color:#6fb4ff}.r-epic{color:#b58cff}.r-legendary{color:#ffb020}
+
+.filter{display:flex;gap:0;border:1px solid var(--line-ctl);margin-bottom:12px}
+.filter input{flex:1;min-width:0;background:none;border:0;color:var(--bone);font-family:var(--mono);font-size:11.5px;padding:8px 10px}
+.filter input::placeholder{color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-size:10.5px}
+.filter button{border-left:1px solid var(--line-ctl);padding:0 11px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- footer ---------- */
+.verify{margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}
+.fair{display:flex;gap:10px;align-items:baseline;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--muted);flex-wrap:wrap}
+.fair .dot{width:7px;height:7px;background:var(--good);flex:none;align-self:center}
+.fair code{color:var(--bone);background:rgba(244,237,225,.07);padding:2px 6px}
+.fair a{color:var(--dim);text-decoration:none;border-bottom:1px solid var(--line-ctl)}
+.sink{margin-top:12px;font-family:var(--mono);font-size:11.5px;line-height:1.75;color:var(--muted)}
+.sink b{color:var(--dim);font-weight:600}
+.rules-out{margin-top:14px;font-size:13.5px;color:var(--dim)}
+.rules-out a{color:var(--ember);text-decoration:none;border-bottom:1px solid var(--ember)}
+
+/* cross-sell LAST, after all verification */
+.cross{margin-top:30px;padding:15px 0;border-top:1px solid var(--line-soft);display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.cross .m{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ronkestr);border:1px solid rgba(39,185,252,.45);padding:4px 9px}
+.cross b{color:var(--dim);font-weight:600}
+.cross a{margin-left:auto;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);text-decoration:none;border-bottom:1px solid var(--line-ctl);padding-bottom:2px}
+
+/* ---------- responsive ---------- */
+@media (max-width:1040px){
+  :root{--pad:26px}
+  .exhibit{grid-template-columns:minmax(0,1fr);gap:32px}
+  .ex-l{border-right:0;padding-right:0;border-bottom:1px solid var(--line-soft);padding-bottom:30px}
+  .cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px}
+  .cols .col:last-child{grid-column:1/-1;margin-top:26px;padding-top:26px;border-top:1px solid var(--line-soft)}
+  .dec-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px}
+}
+@media (max-width:720px){
+  :root{--pad:18px}
+  .prov{gap:8px 16px}
+  .prov .sp{display:none}
+  .amount{font-size:36px}
+  .amount .to{font-size:20px;display:block;margin:6px 0 0}
+  .hash{font-size:12px}
+  .cols{grid-template-columns:minmax(0,1fr);gap:0}
+  .cols .col{padding-bottom:26px;margin-bottom:26px;border-bottom:1px solid var(--line-soft)}
+  .cols .col:last-child{grid-column:auto;margin-top:0;padding-top:0;border-top:0;border-bottom:0;margin-bottom:0}
+  .dec-grid{grid-template-columns:minmax(0,1fr);gap:0}
+  .recips li{flex-wrap:wrap;gap:4px 10px}
+  .recips .why{width:auto;text-align:left}
+  .recips .w{flex-basis:100%}
+  /* The ledger becomes a compact 3-line record — a 6-col mono table cannot
+     survive 390px. One field per line (the obvious approach) made this section
+     ~1,400px taller on its own, so the six cells are re-grouped into a grid:
+        row 1   date            amount
+        row 2   event           N wallets
+        row 3   source          transaction  */
+  .tbl,.tbl tbody,.tbl td{display:block;width:100%}
+  .tbl thead{display:none}
+  .tbl tr{
+    display:grid;grid-template-columns:1fr auto;gap:3px 14px;
+    padding:13px 0;border-bottom:1px solid var(--line-soft);
+  }
+  .tbl td{border:0;padding:0}
+  .tbl td.r{text-align:right}
+  .tbl td:nth-child(1){grid-column:1;grid-row:1}
+  .tbl td:nth-child(3){grid-column:2;grid-row:1;font-size:13.5px}
+  .tbl td:nth-child(2){grid-column:1;grid-row:2;color:var(--bone)}
+  .tbl td:nth-child(4){grid-column:2;grid-row:2;color:var(--muted);font-size:11.5px}
+  .tbl td:nth-child(4)::after{content:" wallets";letter-spacing:.06em}
+  .tbl td:nth-child(5){grid-column:1;grid-row:3}
+  .tbl td:nth-child(6){grid-column:2;grid-row:3}
+  .tbl tr.season td{background:none}
+  .tbl tr.season{border-left:2px solid rgba(39,185,252,.55);padding-left:11px}
+}
+/* NO nested scrolling anywhere: the v1 feeds used max-height + overflow:auto,
+   which on touch is a scroll trap, and it bought only 73px of page height. */
+
+/* mockup scaffolding only */
+.mk{max-width:1180px;margin:0 auto;padding:13px var(--pad);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line-soft);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.mk b{color:var(--ember)}
+</style>
+</head>
+<body>
+
+<div class="mk"><b>Mockup v2</b> · Crucible payment record · real data, 2026-07-31 · not live</div>
+
+<h1 class="sr">Crucible payment record</h1>
+
+<!-- ============ BAND 0 — PROVENANCE ============ -->
+<div class="prov">
+  <span class="brand">Crucible</span>
+  <span>Payment record</span>
+  <span class="sp"></span>
+  <span><b>47</b> transactions</span>
+  <span><b>30</b> days</span>
+  <span>Last payment <b>2 days ago</b></span>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ BAND 1 — EXHIBIT ============ -->
+  <section class="exhibit">
+    <div class="ex-l">
+      <div class="ex-head">
+        <h2>The last time this&nbsp;game paid anybody</h2>
+        <div class="stepper">
+          <button type="button">◀ Earlier</button>
+          <button type="button">Later ▶</button>
+        </div>
+      </div>
+      <p class="rule-line">
+        Always the most recent settlement that actually moved money — never the biggest one.
+        Step back through all 27 with the arrows.
+      </p>
+
+      <p class="stamp">2026-07-29 · 00:10:05 UTC<span class="sep">·</span>Game day 27<span class="sep">·</span>Chest cracked by JohnnyCola</p>
+
+      <p class="amount">$1.00 <span class="to">USDC → 5 wallets</span></p>
+      <p class="amount-sub">One batched transaction · paid 10 minutes after the day closed</p>
+
+      <ul class="recips">
+        <li><span class="h">JohnnyCola</span><span class="w">0x53103798…3f06c</span><span class="why">Crack + damage</span><span class="n">$0.552142</span></li>
+        <li><span class="h">Puck</span><span class="w">0xac1cec3f…86a68</span><span class="why">Damage</span><span class="n">$0.381112</span></li>
+        <li><span class="h">skmd</span><span class="w">0xe832c4a2…</span><span class="why">Damage</span><span class="n">$0.061770</span></li>
+        <li><span class="h">xines007</span><span class="w">0x8cf6d6c3…50b8a</span><span class="why">Damage</span><span class="n">$0.004111</span></li>
+        <li><span class="h">BitcoinBrruce</span><span class="w">0xfa440509…5e5c95</span><span class="why">Damage</span><span class="n">$0.000865</span></li>
+      </ul>
+      <p class="recon"><span>Sum of the five rows above</span><b>= $1.000000 USDC</b></p>
+
+      <div class="receipt">
+        <p class="rl">The transaction — check it yourself</p>
+        <a class="hash" href="#">0x40ea144750bd666c39dc8e480937ea44e53e736a649776d5342e81bc625f7df2</a><br>
+        <a class="go" href="#">Open on Ronin explorer ↗</a>
+        <p class="second">
+          A second transaction the same night paid the chest's token side-pot —
+          <b style="color:var(--dim)">414 $RONKESTR</b> to the same winner:
+          <a href="#">0xb2546db9…7490 ↗</a>
+        </p>
+      </div>
+
+      <p class="footnote">
+        Note on this record: our local copy of this day's file was overwritten by an internal test on
+        2026-07-29 and rebuilt from the payouts table and the payout log. Both transactions above were
+        confirmed on-chain before that happened, and the chain is the record — this note is about our
+        bookkeeping, not the money.
+      </p>
+    </div>
+
+    <div class="ex-r">
+      <h3 style="margin-bottom:14px">Owed right now — not yet paid</h3>
+
+      <div class="owed">
+        <span class="owed-l">In the chest</span>
+        <span class="owed-v">$5.38</span>
+        <div class="compo">
+          <span style="flex:4.10;background:var(--line-ctl)"></span>
+          <span style="flex:1.28;background:rgba(39,185,252,.55)"></span>
+        </div>
+        <ul class="compo-k">
+          <li><i style="background:var(--line-ctl)"></i>$4.10 USDC</li>
+          <li><i style="background:rgba(39,185,252,.55)"></i>$1.28 $RONKESTR</li>
+        </ul>
+        <p class="owed-n">Grows every night nobody cracks it. Unpaid for <b>3 days</b>. Longest gap so far: <b>8 days</b>.</p>
+      </div>
+
+      <div class="owed">
+        <span class="owed-l">Season 3 prize</span>
+        <span class="owed-v">~$52</span>
+        <p class="owed-n">
+          <b>~1,093 RON</b>, paid at close in 13 days. This is Ronin's estimate, not ours —
+          if their builder programme ends, this line goes to zero.
+        </p>
+      </div>
+
+      <p class="law">
+        <i class="solid"></i><b style="color:var(--dim)">Solid</b> = paid, and carries a transaction.<br>
+        <i class="out"></i><b style="color:var(--dim)">Outline</b> = owed, and carries none.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ BAND 2 — DECODER ============ -->
+  <section class="decoder">
+    <h2>What the words mean</h2>
+    <dl class="dec-grid">
+      <div><dt>Bank</dt><dd>Damage you decide to keep. It becomes your share of the chest.</dd></div>
+      <div><dt>The chest</dt><dd>The pot. It grows every night nobody wins it.</dd></div>
+      <div><dt>Crack</dt><dd>When a swing bursts the chest open and it pays out.</dd></div>
+      <div><dt>Finder's cut</dt><dd>20% extra to whoever's swing cracked it. The rest splits by share.</dd></div>
+      <div><dt>$RONKESTR</dt><dd>A Ronin token. Part of the chest is paid in it, not in dollars.</dd></div>
+      <div><dt>$BURN · rORE</dt><dd>Ronin tokens you spend to craft a weapon. That spend funds the pot.</dd></div>
+    </dl>
+  </section>
+
+  <!-- ============ BAND 3 — THE LEDGER ============ -->
+  <section class="ledger">
+    <h2>Every payment, newest first</h2>
+    <p class="lede" style="margin-top:10px">
+      Each row is one transaction on Ronin. <b>Source</b> says where the money came from —
+      the game's own pot, or Ronin's builder programme.
+    </p>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>Date</th><th>Event</th><th class="r">Amount</th><th class="r num">Wallets</th><th>Source</th><th class="r">Transaction</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="date" data-l="Date">2026-07-29</td><td data-l="Event">Chest crack + damage</td><td class="amt r" data-l="Amount">$1.00</td><td class="r num" data-l="Wallets">5</td><td data-l="Source"><span class="src">Game pot</span></td><td class="r" data-l="Tx"><a class="tx" href="#">0x40ea…7df2 ↗</a></td></tr>
+        <tr><td class="date" data-l="Date">2026-07-28</td><td data-l="Event">Chest crack + damage</td><td class="amt r" data-l="Amount">$8.385</td><td class="r num" data-l="Wallets">3</td><td data-l="Source"><span class="src">Game pot</span></td><td class="r" data-l="Tx"><a class="tx" href="#">0x5844…992f ↗</a></td></tr>
+        <tr><td class="date" data-l="Date">2026-07-27</td><td data-l="Event">Damage split</td><td class="amt r" data-l="Amount">$0.500001</td><td class="r num" data-l="Wallets">6</td><td data-l="Source"><span class="src">Game pot</span></td><td class="r" data-l="Tx"><a class="tx" href="#">0xfa75…a316 ↗</a></td></tr>
+        <tr><td class="date" data-l="Date">2026-07-26</td><td data-l="Event">Damage split</td><td class="amt r" data-l="Amount">$0.50</td><td class="r num" data-l="Wallets">4</td><td data-l="Source"><span class="src">Game pot</span></td><td class="r" data-l="Tx"><a class="tx" href="#">0xa0cd…3d68 ↗</a></td></tr>
+        <tr><td class="date" data-l="Date">2026-07-25</td><td data-l="Event">Damage split</td><td class="amt r" data-l="Amount">$0.500001</td><td class="r num" data-l="Wallets">4</td><td data-l="Source"><span class="src">Game pot</span></td><td class="r" data-l="Tx"><a class="tx" href="#">0x1e44…afcc ↗</a></td></tr>
+        <tr><td class="date" data-l="Date">2026-07-24</td><td data-l="Event">Damage split</td><td class="amt r" data-l="Amount">$0.50</td><td class="r num" data-l="Wallets">5</td><td data-l="Source"><span class="src">Game pot</span></td><td class="r" data-l="Tx"><a class="tx" href="#">0x21fe…5216 ↗</a></td></tr>
+        <tr class="season"><td class="date" data-l="Date">2026-07-20</td><td data-l="Event">Season 2 prize — 19 winners</td><td class="amt r" data-l="Amount">$113.67</td><td class="r num" data-l="Wallets">19</td><td data-l="Source"><span class="src ext">Ronin programme</span></td><td class="r" data-l="Tx"><a class="tx" href="#">19 hashes ▸</a></td></tr>
+      </tbody>
+    </table>
+    <p class="more"><button type="button">Show all 27 settlements ▾</button> &nbsp;·&nbsp; 2026-07-03 → 2026-07-29</p>
+
+    <p class="recon-foot">
+      <b>$148.72</b> paid in total — <b>$113.67</b> (76%) in season prizes from Ronin's builder programme,
+      <b>$35.05</b> (24%) from the game's own pot — to <b>21</b> wallets, across <b>47</b> transactions
+      (27 nightly settlements, 19 season prizes, 1 token side-pot), 2026-07-03 → 2026-07-29.
+      That averages <b>$4.96 a day</b> across the whole game and <b>$7.08 per wallet, lifetime</b>.
+      Season prizes are 50% of what Ronin's Proof-of-Distribution programme pays Crucible as a builder —
+      external money routed to players, not operator marketing spend and not other players' deposits.
+      They were paid as <b>2,034.90 RON</b>, worth $113.67 at the RON price on the day they were sent.
+      All 19 season winners also appear in the nightly ledger.
+    </p>
+  </section>
+
+  <!-- ============ BAND 4 — THREE COLUMNS ============ -->
+  <div class="cols">
+
+    <section class="col">
+      <div class="col-head">
+        <h3>Everyone who has been paid</h3>
+        <span class="meta">21 wallets</span>
+      </div>
+      <div class="filter">
+        <input type="text" placeholder="Filter by handle or wallet" aria-label="Filter by handle or wallet">
+        <button type="button">Clear</button>
+      </div>
+      <p class="meta" style="margin-bottom:8px">Sorted by most recent payment — not by amount.</p>
+      <ul class="rows">
+        <li><span class="rk">·</span><span class="nm">JohnnyCola</span><span class="sub">2 days ago</span><span class="v">$51.67</span></li>
+        <li><span class="rk">·</span><span class="nm">Puck</span><span class="sub">2 days ago</span><span class="v">$16.89</span></li>
+        <li><span class="rk">·</span><span class="nm me">skmd</span><span class="sub">2 days ago</span><span class="v">$32.89</span></li>
+        <li><span class="rk">·</span><span class="nm">xines007</span><span class="sub">2 days ago</span><span class="v">$17.15</span></li>
+        <li><span class="rk">·</span><span class="nm">BitcoinBrruce</span><span class="sub">2 days ago</span><span class="v">$0.024</span></li>
+        <li><span class="rk">·</span><span class="nm">lucifer</span><span class="sub">11 days ago</span><span class="v">$12.48</span></li>
+      </ul>
+      <p class="meta" style="margin-top:12px">Connect a wallet to pin your own rows. The data is public either way.</p>
+    </section>
+
+    <section class="col">
+      <div class="col-head">
+        <h3>The chest, night by night</h3>
+      </div>
+      <div class="spark" aria-hidden="true">
+        <i class="hit" style="height:18%"></i><i class="hit" style="height:22%"></i><i class="hit" style="height:26%"></i><i style="height:30%"></i><i style="height:34%"></i><i style="height:38%"></i><i style="height:44%"></i><i style="height:50%"></i><i style="height:56%"></i><i class="hit" style="height:62%"></i><i style="height:24%"></i><i style="height:30%"></i><i style="height:36%"></i><i style="height:42%"></i><i style="height:48%"></i><i style="height:56%"></i><i style="height:64%"></i><i class="hit" style="height:72%"></i><i style="height:26%"></i><i style="height:34%"></i><i style="height:42%"></i><i style="height:52%"></i><i style="height:62%"></i><i style="height:74%"></i><i style="height:88%"></i><i class="hit" style="height:100%"></i><i class="hit" style="height:14%"></i><i style="height:40%"></i><i style="height:56%"></i>
+      </div>
+      <p class="spark-cap">Chest balance, night 1 → 29 · orange = cracked</p>
+      <p class="lede" style="font-size:13px;margin-bottom:14px">
+        <b>7 cracks in 29 nights</b> — about one every four days. On the other 22 the balance carried
+        forward and grew. Biggest: <b>$7.88</b>. Longest gap: <b>8 nights</b>.
+      </p>
+      <ul class="feed">
+        <li><span class="t"><span class="carry">Carried forward</span> → $5.12 <span style="color:var(--ronkestr)">incl. 214 $RONKESTR</span></span><time>Night 29</time></li>
+        <li><span class="t"><span class="carry">Carried forward</span> → $3.10</span><time>Night 28</time></li>
+        <li><span class="t"><span class="crack">Cracked</span> — JohnnyCola took <b>$2.11</b></span><time>Night 27</time></li>
+        <li><span class="t"><span class="crack">Cracked</span> — JohnnyCola took <b>$7.88</b></span><time>Night 26</time></li>
+        <li><span class="t"><span class="carry">Carried forward</span> → $7.44</span><time>Night 25</time></li>
+        <li><span class="t"><span class="carry">Carried forward</span> → $6.10</span><time>Night 24</time></li>
+      </ul>
+    </section>
+
+    <section class="col">
+      <div class="col-head">
+        <h3>Live activity</h3>
+        <div class="seg">
+          <button type="button" aria-pressed="true">Everyone</button>
+          <button type="button" aria-pressed="false">Mine</button>
+        </div>
+      </div>
+      <ul class="feed">
+        <li><span class="t"><b>skmd</b> · <span class="r-rare">Rare 1d6</span> · shattered — kept <b>36</b></span><time>38m</time></li>
+        <li><span class="t"><b>skmd</b> · <span class="r-rare">Rare 1d6</span> · shattered — kept <b>33</b></span><time>1h</time></li>
+        <li><span class="t"><b>skmd</b> · <span class="r-epic">Epic 2d6</span> · banked <b>72</b></span><time>1h</time></li>
+        <li><span class="t"><b>skmd</b> · <span class="r-common">Common 1d4</span> · banked <b>29</b></span><time>1h</time></li>
+        <li><span class="t"><b>Puck</b> · <span class="r-legendary">Legendary 3d6</span> · banked <b>96</b></span><time>2h</time></li>
+        <li><span class="t"><b>skmd</b> · <span class="r-rare">Rare 1d6</span> · banked <b>44</b></span><time>2h</time></li>
+      </ul>
+    </section>
+
+  </div>
+
+  <!-- ============ VERIFICATION, THEN the cross-sell ============ -->
+  <section class="verify">
+    <div class="fair">
+      <span class="dot"></span>
+      <span>
+        Every roll is committed before the day starts and revealed when it ends — day 30 is locked to
+        <code>8eb52bd566fcb344…</code>. <a href="#">The commitment</a> · <a href="#">How to check it yourself</a>
+      </span>
+    </div>
+    <p class="sink">
+      Spent into the game so far: <b>94,995</b> $BURN · <b>3,070.7</b> rORE · <b>32,034</b> SLP ·
+      <b>1,173</b> $RONKESTR, across <b>2,387</b> crafts.
+    </p>
+    <p class="rules-out">Dice, odds, shatter rules and perks are all in the <a href="#">full rules →</a></p>
+  </section>
+
+  <div class="cross">
+    <span class="m">⛏ Auto</span>
+    <span>Auto-mine your rORE instead of buying it — <b>save ~17% per craft</b>.</span>
+    <a href="#">How →</a>
+  </div>
+
+</div>
+</body>
+</html>
